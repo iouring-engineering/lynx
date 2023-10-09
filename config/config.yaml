@@ -1,0 +1,69 @@
+env: LOCAL
+
+http:
+  writeTimeout: 15
+  readTimeout: 15
+
+log:
+  dir: 
+  file: lynx.log
+  level: DEBUG
+
+lynx-database:
+  host: localhost
+  port: 5432
+  user: root
+  password: root
+  database: lynx
+  maxIdle: 5
+  maxOpen: 10
+
+app-config:
+  short-link-len: 5
+  default-url:
+  android:
+    has-app: #boolean
+    android-url: #if there is no app this will work
+    app-uri-scheme:
+    behavior: #playsearch or custom
+    google-play-search-url:
+    custom-url:
+      fallback-url:
+      package-name:
+    app-links: 
+      enable: #boolean
+      certificate: #can be multiple
+        -
+        -
+        -
+  ios:
+    has-app: #boolean
+    ios-url: #if there is no app this will work
+    app-uri-scheme:
+    behavior: #playsearch or custom
+    app-store-search-url:
+    custom-url:
+      fallback-url:
+      app-store-id:
+    universal-links: 
+      enable: #boolean
+      bundle-identifiers:
+        - 
+        - 
+        -
+      app-prefix:
+
+  social-media:
+    title: 
+    description:
+    thumbnail-image:
+  domain:
+  desktop:
+    default-url:
+    windows-url:
+    mac-url:
+
+
+
+
+
