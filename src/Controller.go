@@ -7,7 +7,7 @@ package main
 // @Accept      json
 // @Success		200  {object} CreateShortLinkResponse
 // @Produce     json
-// @Param request formData CreateShortLinkRequest true "Request body"
+// @Param request body CreateShortLinkRequest true "Request body"
 // @Security 	http_bearer
 // @Router      /create [post]
 func CreateShortLink(cxt *IouHttpContext) {
@@ -16,7 +16,13 @@ func CreateShortLink(cxt *IouHttpContext) {
 	if err != nil {
 
 	}
-	if validateCreateLink(request) {
-
+	if err = validateCreateLink(request); err != nil {
+		cxt.SendBadReqResponse(err.Error())
+		return
 	}
+	var res = &Resp{
+		S:   RESP_OK,
+		Msg: "ok",
+	}
+	cxt.SendResponse(res)
 }

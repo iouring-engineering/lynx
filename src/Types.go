@@ -32,6 +32,12 @@ const (
 	CUSTOM     AppSearch = "CUSTOM"
 )
 
+type Resp struct {
+	S   string `json:"s"`
+	Msg string `json:"msg,omitempty"`
+	D   any    `json:"d,omitempty"`
+}
+
 type Config struct {
 	LynxDb    Database `yaml:"lynx-database"`
 	AppConfig struct {
@@ -63,9 +69,9 @@ type Config struct {
 				PackageName string `yaml:"app-store-id"`
 			} `yaml:"custom-url"`
 			UniversalLinks struct {
-				Enable            bool     `yaml:"enable"`
-				BundleIdentifiers []string `yaml:"bundle-identifiers"`
-				AppPrefix         string   `yaml:"app-prefix"`
+				Enable           bool   `yaml:"enable"`
+				BundleIdentifier string `yaml:"bundle-identifiers"`
+				AppPrefix        string `yaml:"app-prefix"`
 			}
 		} `yaml:"ios"`
 		SocialMedia struct {
@@ -111,28 +117,28 @@ type EndPointContext struct {
 	EndpointName string
 }
 
+type MobileInputs struct {
+	Type LinkType `json:"type" enums:"default,deep,web" validate:"required"`
+	Url  LinkType `json:"url"`
+	Fbl  LinkType `json:"fbl"`
+}
+
+type DeskTopInput struct {
+	Type LinkType `json:"type" enums:"default,web" validate:"required"`
+	Url  LinkType `json:"url"`
+}
+
 type CreateShortLinkRequest struct {
 	Expiry struct {
 		Type  ExpiryType `json:"type" enums:"minutes,hours,days" validate:"required"`
 		Value int        `json:"value" validate:"required"`
 	} `json:"expiry"`
-	WebUrl  string `json:"webUrl"`
-	Data    string `json:"data"`
-	Android struct {
-		Type LinkType `json:"type" enums:"default,deep,web" validate:"required"`
-		Url  LinkType `json:"url"`
-		Fbl  LinkType `json:"fbl"`
-	} `json:"android"`
-	Ios struct {
-		Type LinkType `json:"type" enums:"default,deep,web" validate:"required"`
-		Url  LinkType `json:"url"`
-		Fbl  LinkType `json:"fbl"`
-	} `json:"ios"`
-	Desktop struct {
-		Type LinkType `json:"type" enums:"default,web" validate:"required"`
-		Url  LinkType `json:"url"`
-	} `json:"desktop"`
-	Social struct {
+	WebUrl  string       `json:"webUrl"`
+	Data    string       `json:"data"`
+	Android MobileInputs `json:"android"`
+	Ios     MobileInputs `json:"ios"`
+	Desktop DeskTopInput `json:"desktop"`
+	Social  struct {
 		Title       string `json:"title" validate:"optional"`
 		Description string `json:"description" validate:"optional"`
 		ImgUrl      string `json:"imgUrl" validate:"optional"`

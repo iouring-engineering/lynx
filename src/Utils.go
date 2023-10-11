@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -114,4 +116,12 @@ func genShortUrl() string {
 	sEncodedURL := Base62Encode(uint64(iSnowflakeId))
 	var startInd = len(sEncodedURL) - config.AppConfig.ShortLinkLen
 	return sEncodedURL[startInd:]
+}
+
+func JSONMarshal(t any) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(t)
+	return buffer.Bytes(), err
 }

@@ -4,3 +4,51 @@ const (
 	DEFAULT_SERVER_PORT = 8080
 	ALPHABETS           = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
+
+const (
+	RESP_OK     = "ok"
+	RESP_ERROR  = "error"
+	RESP_NODATA = "no-data"
+)
+
+// expiry types
+const (
+	EXPIRY_MINUTES = "minutes"
+	EXPIRY_HOURS   = "hours"
+	EXPIRY_DAYS    = "days"
+)
+
+// LinkTypes default,deep,web
+const (
+	LINK_DEFAULT LinkType = "default"
+	LINK_DEEP    LinkType = "deep"
+	LINK_WEB     LinkType = "web"
+)
+
+// error messages
+const (
+	UnAuthorized     = "Unauthorized"
+	Forbidden        = "Forbidden"
+	ResourceNotFound = "Resource not found"
+	UnKnownErr       = "Unknown error"
+	EndpointErr      = "Unable to connect to endpoint. Kindly try again."
+)
+
+// headers
+const (
+	APPLICATION_JSON = "application/json"
+	APPLICATION_FORM = "application/x-www-form-urlencoded"
+	HTTP_UPGRADE     = "Upgrade"
+	HTTP_WEBSOCKET   = "websocket"
+	IF_NONE_MATCH    = "If-None-Match"
+	ETAG             = "ETag"
+	OCTET_STREAM     = "application/octet-stream"
+)
+
+const (
+	LOCAL = "LOCAL"
+	DEV   = "DEV"
+	QA    = "QA"
+	UAT   = "UAT"
+	PROD  = "PROD"
+)

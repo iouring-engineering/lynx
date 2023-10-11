@@ -1,6 +1,8 @@
 package main
 
-import "github.com/gorilla/mux"
+import (
+	"github.com/gorilla/mux"
+)
 
 // @title						Lynx Services
 // @version						0.0.1
@@ -23,4 +25,5 @@ func main() {
 	var muxRouter *mux.Router = mux.NewRouter()
 	var localRouter = &Router{}
 	localRouter.initializeRouter(muxRouter)
+	InitializeHttpServer(muxRouter)
 }

@@ -22,7 +22,6 @@ func (db *LynxDbType) InitLynxDbConn() {
 	dbPort := config.LynxDb.Port
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		dbHost, dbPort, dbUser, dbPass, dbName)
-	fmt.Println(connStr)
 	var err error
 	localDb, err := sql.Open(dbDriver, connStr)
 	localDb.SetMaxIdleConns(config.LynxDb.MaxIdle)
@@ -41,6 +40,12 @@ func (db *LynxDbType) getEndPoint(cxt *IouHttpContext) EndPointContext {
 }
 
 func (db *LynxDbType) checkConn(cxt *IouHttpContext) error {
+	end := db.getEndPoint(cxt)
+	err := end.Db.Ping()
+	return err
+}
+
+func (db *LynxDbType) insertShortLink(cxt *IouHttpContext, request CreateShortLinkRequest) error {
 	end := db.getEndPoint(cxt)
 	err := end.Db.Ping()
 	return err
