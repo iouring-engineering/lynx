@@ -5,7 +5,7 @@ http:
   readTimeout: 15
 
 log:
-  dir: 
+  dir:
   file: lynx.log
   level: DEBUG
 
@@ -20,50 +20,40 @@ lynx-database:
 
 app-config:
   short-link-len: 5
-  default-url:
+  default-url: https://nxtrade-dev-api.iouring.in/webapp
+  domain: https://nxtrade-dev-api.iouring.in
   android:
-    has-app: #boolean
-    android-url: #if there is no app this will work
-    app-uri-scheme:
-    behavior: #playsearch or custom
-    google-play-search-url:
+    has-app: true #boolean
+    android-url: https://nxtrade-dev-api.iouring.in/android #if there is no app this will work
+    app-uri-scheme: https://nxtrade-dev-tj-links.iouring.in
+    behavior: playsearch #playsearch or custom navigation if app is not installed
+    google-play-search-url: https://play.google.com/store/apps/details?id=com.nxtrad.cubeplus
     custom-url:
-      fallback-url:
-      package-name:
-    app-links: 
-      enable: #boolean
+      fallback-url: https://google.com #if uri scheme failed
+      package-name: com.iouring.tradejini.dev
+    app-links:
+      enable: true #boolean
       certificate: #can be multiple
         -
-        -
-        -
   ios:
-    has-app: #boolean
-    ios-url: #if there is no app this will work
-    app-uri-scheme:
+    has-app: true #boolean
+    ios-url: https://nxtrade-dev-api.iouring.in/ios #if there is no app this will work
+    app-uri-scheme: https://nxtrade-dev-tj-links.iouring.in
     behavior: #playsearch or custom
-    app-store-search-url:
+    app-store-search-url: https://apps.apple.com/in/app/cubeplus-by-tradejini/id6445836933
     custom-url:
-      fallback-url:
-      app-store-id:
-    universal-links: 
-      enable: #boolean
-      bundle-identifiers:
-        - 
-        - 
-        -
+      fallback-url: https://google.com
+      app-id: id6445836933
+    universal-links:
+      enable: true #boolean
+      bundle-identifier: com.iouring.tradejini.dev.ios
       app-prefix:
 
   social-media:
-    title: 
-    description:
-    thumbnail-image:
-  domain:
+    title: testing
+    description: testing description
+    thumbnail-image: https://img.fkcdn.com/image/xif0q/shoe/v/p/a/-original-imagqe2yhkpexhvz.jpeg
   desktop:
-    default-url:
-    windows-url:
-    mac-url:
-
-
-
-
-
+    default-url: https://nxtrade-dev-api.iouring.in/webapp
+    windows-url: https://nxtrade-dev-api.iouring.in/webapp-windows
+    mac-url: https://nxtrade-dev-api.iouring.in/mac-url

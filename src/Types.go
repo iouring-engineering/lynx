@@ -115,6 +115,7 @@ type EndPointContext struct {
 	*IouHttpContext
 	Db           *sql.DB
 	EndpointName string
+	LogOnce      bool
 }
 
 type MobileInputs struct {
@@ -131,7 +132,7 @@ type DeskTopInput struct {
 type CreateShortLinkRequest struct {
 	Expiry struct {
 		Type  ExpiryType `json:"type" enums:"minutes,hours,days" validate:"required"`
-		Value int        `json:"value" validate:"required"`
+		Value int64      `json:"value" validate:"required"`
 	} `json:"expiry"`
 	WebUrl  string       `json:"webUrl"`
 	Data    string       `json:"data"`
@@ -143,6 +144,17 @@ type CreateShortLinkRequest struct {
 		Description string `json:"description" validate:"optional"`
 		ImgUrl      string `json:"imgUrl" validate:"optional"`
 	} `json:"social"`
+}
+
+type InsertShortLink struct {
+	ShortCode string
+	Data      string
+	WebUrl    string
+	Android   string
+	Ios       string
+	Desktop   string
+	Social    string
+	Expiry    int64 // in minutes
 }
 
 type CreateShortLinkResponse struct {

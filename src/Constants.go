@@ -1,5 +1,7 @@
 package main
 
+const STD_TIME_FORMAT = "2006-01-02 15:04:05.000000"
+
 const (
 	DEFAULT_SERVER_PORT = 8080
 	ALPHABETS           = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -16,6 +18,12 @@ const (
 	EXPIRY_MINUTES = "minutes"
 	EXPIRY_HOURS   = "hours"
 	EXPIRY_DAYS    = "days"
+)
+
+// seconds
+const (
+	MIN_PER_HOUR = 60
+	MIN_PER_DAY  = 1440
 )
 
 // LinkTypes default,deep,web

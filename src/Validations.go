@@ -1,6 +1,8 @@
 package main
 
-import "errors"
+import (
+	"errors"
+)
 
 func validateExpiry(expType ExpiryType) error {
 	if expType == EXPIRY_MINUTES || expType == EXPIRY_HOURS || expType == EXPIRY_DAYS {
@@ -18,7 +20,7 @@ func validateAndroid(input MobileInputs) error {
 		}
 		return nil
 	}
-	return errors.New("Invalid expiry type")
+	return errors.New("Invalid android type")
 }
 
 func validateIos(input MobileInputs) error {

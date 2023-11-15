@@ -9,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 
 	"gopkg.in/yaml.v2"
 )
@@ -124,4 +126,19 @@ func JSONMarshal(t any) ([]byte, error) {
 	encoder.SetEscapeHTML(false)
 	err := encoder.Encode(t)
 	return buffer.Bytes(), err
+}
+
+func CurrentTime() string {
+	return time.Now().Format(STD_TIME_FORMAT)
+}
+
+// returns in minutes
+func calculateExpiry(expType string, value int64) int64 {
+	if strings.EqualFold(expType, EXPIRY_HOURS) {
+		return value * MIN_PER_HOUR
+	}
+	if strings.EqualFold(expType, EXPIRY_DAYS) {
+		return value * MIN_PER_DAY
+	}
+	return value
 }
