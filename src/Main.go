@@ -21,7 +21,11 @@ func main() {
 	InfoLogger.Println("configs initialized")
 	LynxDb.InitLynxDbConn()
 	InfoLogger.Println("Lynx DB connected")
-
+	err := loadHtmlFile()
+	if err != nil {
+		InfoLogger.Println("error on html ", err)
+		return
+	}
 	var muxRouter *mux.Router = mux.NewRouter()
 	var localRouter = &Router{}
 	localRouter.initializeRouter(muxRouter)

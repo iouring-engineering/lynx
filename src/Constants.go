@@ -40,6 +40,8 @@ const (
 	ResourceNotFound = "Resource not found"
 	UnKnownErr       = "Unknown error"
 	EndpointErr      = "Unable to connect to endpoint. Kindly try again."
+	ShortLinkFailed  = "Creating short link failed, please retry after sometime"
+	InvalidShortUrl  = "Invalid short URL"
 )
 
 // headers

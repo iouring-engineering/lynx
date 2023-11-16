@@ -65,8 +65,26 @@ func (db *LynxDbType) getEndPoint(cxt *IouHttpContext) EndPointContext {
 // 	return err
 // }
 
-func (db *LynxDbType) insertShortLink(cxt *IouHttpContext, input InsertShortLink) error {
+func (db *LynxDbType) insertShortLink(cxt *IouHttpContext, input DbShortLink) error {
 	_, err := IODBPrepareExec(db.getEndPoint(cxt), INSERT_SHORT_LINK, input.ShortCode, input.Data, input.WebUrl,
 		input.Android, input.Ios, input.Desktop, input.Social, input.Expiry)
 	return err
+}
+
+func (db *LynxDbType) getData(cxt *IouHttpContext, shortCode string) (DbShortLink, bool, error) {
+	var res DbShortLink
+	rows, err := IODBPrepareQuery(db.getEndPoint(cxt), GET_LINK_DATA, shortCode)
+	if err != nil {
+		return res, false, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		res.ShortCode = shortCode
+		err = rows.Scan(&res.Data, &res.WebUrl, &res.Android, &res.Ios, &res.Desktop, &res.Social, &res.Expiry)
+		if err != nil {
+			return res, false, err
+		}
+		return res, true, nil
+	}
+	return res, false, nil
 }

@@ -19,9 +19,12 @@ lynx-database:
   maxOpen: 10
 
 app-config:
+  html-path: config/template.html
+  404-html-path: config/404Template.html
   short-link-len: 5
+  duplicate-retry-count: 3
   default-url: https://nxtrade-dev-api.iouring.in/webapp
-  domain: https://nxtrade-dev-api.iouring.in
+  base-url: http://localhost:8080 
   android:
     has-app: true #boolean
     android-url: https://nxtrade-dev-api.iouring.in/android #if there is no app this will work
@@ -53,6 +56,7 @@ app-config:
     title: testing
     description: testing description
     thumbnail-image: https://img.fkcdn.com/image/xif0q/shoe/v/p/a/-original-imagqe2yhkpexhvz.jpeg
+    short-icon: https://img.fkcdn.com/image/xif0q/shoe/v/p/a/-original-imagqe2yhkpexhvz.jpeg
   desktop:
     default-url: https://nxtrade-dev-api.iouring.in/webapp
     windows-url: https://nxtrade-dev-api.iouring.in/webapp-windows

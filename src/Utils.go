@@ -9,9 +9,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 
+	"github.com/lib/pq"
 	"gopkg.in/yaml.v2"
 )
 
@@ -141,4 +143,101 @@ func calculateExpiry(expType string, value int64) int64 {
 		return value * MIN_PER_DAY
 	}
 	return value
+}
+
+func isDuplicateLink(err error) bool {
+	if pqErr, ok := err.(*pq.Error); ok {
+		if pqErr.Code == "23505" {
+			return true
+		}
+	}
+	return false
+}
+
+// func isWeb(cxt *IouHttpContext) bool {
+// 	var userAgent = cxt.Request.Header.Get("User-Agent")
+// 	if strings.Contains(userAgent, "Mozilla") {
+// 		return true
+// 	}
+// 	return false
+// }
+
+// func isMobileWeb(cxt *IouHttpContext) bool {
+// 	var userAgent = cxt.Request.Header.Get("User-Agent")
+// 	if strings.Contains(userAgent, "Mobile") {
+// 		return true
+// 	}
+// 	return false
+// }
+
+func isDesktopWeb(cxt *IouHttpContext) bool {
+	var userAgent = cxt.Request.Header.Get("User-Agent")
+	if strings.Contains(userAgent, "Mobile") {
+		return false
+	}
+	return true
+}
+
+func isMap(value any) bool {
+	kind := reflect.TypeOf(value).Kind()
+	return kind == reflect.Map
+}
+
+func getDataString(data any) (string, error) {
+	if isMap(data) {
+		jsonBytes, err := json.Marshal(data)
+		if err != nil {
+			return "", err
+		}
+		return string(jsonBytes), nil
+	}
+	return fmt.Sprint(data), nil
+}
+
+func getValueOrDefault(value string, defaultValue string) string {
+	if value != "" {
+		return value
+	}
+	return defaultValue
+}
+
+func loadHtmlFile() error {
+	file, err := os.ReadFile(config.AppConfig.HtmlFilePath)
+	if err != nil {
+		return err
+	}
+	htmlCache = string(file)
+	file, err = os.ReadFile(config.AppConfig.HtmlFilePath404)
+	if err != nil {
+		return err
+	}
+	htmlCache404 = string(file)
+	return nil
+}
+
+func frame404WebPage() string {
+	return htmlCache404
+}
+
+func frameWebPage(data DbShortLink, webUrl string) string {
+	var social SocialInput
+	json.Unmarshal([]byte(data.Social), &social)
+	var htmlFile = htmlCache
+	replacements := map[string]string{
+		"{TITLE}":             getValueOrDefault(social.Title, config.AppConfig.SocialMedia.Title),
+		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
+		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
+		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
+		"{REDIRECT_LOCATION}": getValueOrDefault(webUrl, config.AppConfig.DefaultUrl),
+		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
+	}
+	for key, val := range replacements {
+		htmlFile = strings.ReplaceAll(htmlFile, key, val)
+	}
+	return htmlFile
+}
+
+func sendHtmlResponse(cxt *IouHttpContext, respBytes []byte) {
+	cxt.RespWriter.Header().Set("Content-Type", "text/html")
+	cxt.RespWriter.Write(respBytes)
 }

@@ -38,12 +38,20 @@ type Resp struct {
 	D   any    `json:"d,omitempty"`
 }
 
+type IouMsgResp struct {
+	S   string `json:"s"`
+	Msg string `json:"msg,omitempty"`
+}
+
 type Config struct {
 	LynxDb    Database `yaml:"lynx-database"`
 	AppConfig struct {
-		ShortLinkLen int    `yaml:"short-link-len"`
-		DefaultUrl   string `yaml:"default-url"`
-		Android      struct {
+		ShortLinkLen        int    `yaml:"short-link-len"`
+		DuplicateRetryCount int    `yaml:"duplicate-retry-count"`
+		DefaultUrl          string `yaml:"default-url"`
+		HtmlFilePath        string `yaml:"html-path"`
+		HtmlFilePath404     string `yaml:"404-html-path"`
+		Android             struct {
 			HasApp              bool      `yaml:"has-app"`
 			AndroidUrl          string    `yaml:"android-url"`
 			AppUriScheme        string    `yaml:"app-uri-scheme"`
@@ -78,8 +86,9 @@ type Config struct {
 			Title        string `yaml:"title"`
 			Description  string `yaml:"description"`
 			ThumbNailImg string `yaml:"thumbnail-image"`
+			ShortIcon    string `yaml:"short-icon"`
 		} `yaml:"social-media"`
-		Domain  string `yaml:"domain"`
+		BaseUrl string `yaml:"base-url"`
 		Desktop struct {
 			DefaultUrl string `yaml:"default-url"`
 			WindowsUrl string `yaml:"windows-url"`
@@ -129,24 +138,27 @@ type DeskTopInput struct {
 	Url  LinkType `json:"url"`
 }
 
+type SocialInput struct {
+	Title       string `json:"title" validate:"optional"`
+	Description string `json:"description" validate:"optional"`
+	ImgUrl      string `json:"imgUrl" validate:"optional"`
+	Icon        string `json:"short-icon"`
+}
+
 type CreateShortLinkRequest struct {
 	Expiry struct {
 		Type  ExpiryType `json:"type" enums:"minutes,hours,days" validate:"required"`
 		Value int64      `json:"value" validate:"required"`
 	} `json:"expiry"`
 	WebUrl  string       `json:"webUrl"`
-	Data    string       `json:"data"`
+	Data    any          `json:"data"`
 	Android MobileInputs `json:"android"`
 	Ios     MobileInputs `json:"ios"`
 	Desktop DeskTopInput `json:"desktop"`
-	Social  struct {
-		Title       string `json:"title" validate:"optional"`
-		Description string `json:"description" validate:"optional"`
-		ImgUrl      string `json:"imgUrl" validate:"optional"`
-	} `json:"social"`
+	Social  SocialInput  `json:"social"`
 }
 
-type InsertShortLink struct {
+type DbShortLink struct {
 	ShortCode string
 	Data      string
 	WebUrl    string
