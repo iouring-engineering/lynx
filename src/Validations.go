@@ -5,7 +5,7 @@ import (
 )
 
 func validateAndroid(input MobileInputs) error {
-	if input.Fbl == "" || input.WebUrl == "" {
+	if input.Fbl == "" {
 		return errors.New("Fallback url and web url cannot be used at same time")
 	}
 	return nil

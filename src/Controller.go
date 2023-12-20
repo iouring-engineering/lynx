@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -41,6 +42,10 @@ func CreateShortLink(cxt *IouHttpContext) {
 	}
 	for {
 		shortCode = genShortUrl()
+		var dbExp = sql.NullString{String: "", Valid: false}
+		if expiryValue != 0 {
+
+		}
 		err = LynxDb.insertShortLink(cxt, DbShortLink{
 			ShortCode: shortCode,
 			Data:      strData,
@@ -48,7 +53,7 @@ func CreateShortLink(cxt *IouHttpContext) {
 			Android:   string(androidStr),
 			Ios:       string(iosStr),
 			Social:    string(socialStr),
-			Expiry:    expiryValue,
+			Expiry:    dbExp,
 		})
 		retryCount++
 		if err != nil && isDuplicateLink(err) {
@@ -101,10 +106,24 @@ func GetSourceLink(cxt *IouHttpContext) {
 		sendHtmlResponse(cxt, []byte(html))
 		return
 	}
-	if isDesktopWeb(cxt) || isMobileWeb(cxt) {
+	if isDesktopWeb(cxt) {
 		var url string = frameBrowserUrl(linkData)
-		html := frameWebPage(linkData, url)
-		sendHtmlResponse(cxt, []byte(html))
+		cxt.SendRedirect(url)
 		return
 	}
+
+	if isAndroidWeb(cxt) {
+		var url string = frameAndroidUrl(linkData.Android)
+		cxt.SendRedirect(url)
+		return
+	}
+
+	if isIosWeb(cxt) {
+		var url string = frameIosUrl(linkData.Ios)
+		cxt.SendRedirect(url)
+		return
+	}
+
+	html := frameWebPage(linkData, config.AppConfig.DefaultFallbackUrl)
+	sendHtmlResponse(cxt, []byte(html))
 }

@@ -48,24 +48,20 @@ type Config struct {
 	AppConfig struct {
 		ShortLinkLen        int    `yaml:"short-link-len"`
 		DuplicateRetryCount int    `yaml:"duplicate-retry-count"`
-		DefaultUrl          string `yaml:"default-url"`
+		DefaultFallbackUrl  string `yaml:"default-fallback-url"`
 		HtmlFilePath        string `yaml:"html-path"`
 		HtmlFilePath404     string `yaml:"404-html-path"`
 		Android             struct {
-			HasApp               bool      `yaml:"has-app"`
 			AndroidDefaultWebUrl string    `yaml:"android-default-web-url"`
 			GooglePlaySearchUrl  string    `yaml:"google-play-search-url"`
 			Behaviour            AppSearch `yaml:"behavior"`
-			FallbackUrl          string    `yaml:"fallback-url"`
 			PackageName          string    `yaml:"package-name"`
 			Certificate          []string  `yaml:"sha-certificates"`
 		} `yaml:"android"`
 		Ios struct {
-			HasApp            bool      `yaml:"has-app"`
 			IosDefaultWebUrl  string    `yaml:"ios-default-web-url"`
 			AppStoreSearchUrl string    `yaml:"app-store-search-url"`
 			Behaviour         AppSearch `yaml:"behavior"`
-			FallbackUrl       string    `yaml:"fallback-url"`
 			TeamId            string    `yaml:"team-id"`
 			BundleIdentifier  string    `yaml:"bundle-identifier"`
 			AppLinkPath       []string  `yaml:"app-link-path"`
@@ -116,9 +112,9 @@ type EndPointContext struct {
 }
 
 type MobileInputs struct {
-	MinimumVersion string `json:"mv"`
-	WebUrl         string `json:"webUrl"`
-	Fbl            string `json:"fbl"`
+	// MinimumVersion string `json:"mv"`
+	// WebUrl         string `json:"webUrl"`
+	Fbl string `json:"fbl"`
 }
 
 type SocialInput struct {
@@ -144,7 +140,7 @@ type DbShortLink struct {
 	Android   string
 	Ios       string
 	Social    string
-	Expiry    int64 // in minutes
+	Expiry    sql.NullString // in minutes
 }
 
 type CreateShortLinkResponse struct {

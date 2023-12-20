@@ -26,13 +26,6 @@ const (
 	MIN_PER_DAY  = 1440
 )
 
-// LinkTypes default,deep,web
-const (
-	LINK_DEFAULT LinkType = "default"
-	LINK_DEEP    LinkType = "deep"
-	LINK_WEB     LinkType = "web"
-)
-
 // error messages
 const (
 	UnAuthorized     = "Unauthorized"

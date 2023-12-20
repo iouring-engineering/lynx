@@ -68,6 +68,10 @@ func (cxt *IouHttpContext) SendAnyResponse(resp any) {
 	cxt.RespWriter.Write(jsonResp)
 }
 
+func (cxt *IouHttpContext) SendRedirect(url string) {
+	http.Redirect(cxt.RespWriter, cxt.Request, url, http.StatusMovedPermanently)
+}
+
 func (cxt *IouHttpContext) SendErrResponse(httpStatusCode int, message string) {
 	var resp = &Resp{S: "error", Msg: message}
 	jsonResp, err := json.Marshal(resp)

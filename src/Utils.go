@@ -137,7 +137,6 @@ func CurrentTime() string {
 // returns in minutes
 func calculateExpiry(exp string) int64 {
 	var value int64 = 0
-
 	return value
 }
 
@@ -150,20 +149,20 @@ func isDuplicateLink(err error) bool {
 	return false
 }
 
-// func isWeb(cxt *IouHttpContext) bool {
-// 	var userAgent = cxt.Request.Header.Get("User-Agent")
-// 	if strings.Contains(userAgent, "Mozilla") {
-// 		return true
-// 	}
-// 	return false
-// }
-
-func isMobileWeb(cxt *IouHttpContext) bool {
+func isAndroidWeb(cxt *IouHttpContext) bool {
 	var userAgent = cxt.Request.Header.Get("User-Agent")
-	if strings.Contains(userAgent, "Mobile") {
-		return true
+	if strings.Contains(userAgent, "Android") {
+		return false
 	}
-	return false
+	return true
+}
+
+func isIosWeb(cxt *IouHttpContext) bool {
+	var userAgent = cxt.Request.Header.Get("User-Agent")
+	if strings.Contains(userAgent, "iPhone") || strings.Contains(userAgent, "iPad") {
+		return false
+	}
+	return true
 }
 
 func isDesktopWeb(cxt *IouHttpContext) bool {
@@ -212,6 +211,17 @@ func loadHtmlFile() error {
 }
 
 func frame404WebPage() string {
+	replacements := map[string]string{
+		"{TITLE}":             config.AppConfig.SocialMedia.Title,
+		"{DESCRIPTION}":       config.AppConfig.SocialMedia.Description,
+		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
+		"{IMAGE_CONTENT}":     config.AppConfig.SocialMedia.ThumbNailImg,
+		"{REDIRECT_LOCATION}": config.AppConfig.DefaultFallbackUrl,
+		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
+	}
+	for key, val := range replacements {
+		htmlCache404 = strings.ReplaceAll(htmlCache404, key, val)
+	}
 	return htmlCache404
 }
 
@@ -224,7 +234,7 @@ func frameWebPage(data DbShortLink, webUrl string) string {
 		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
 		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
 		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
-		"{REDIRECT_LOCATION}": getValueOrDefault(webUrl, config.AppConfig.DefaultUrl),
+		"{REDIRECT_LOCATION}": getValueOrDefault(webUrl, config.AppConfig.DefaultFallbackUrl),
 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
 	}
 	for key, val := range replacements {

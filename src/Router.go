@@ -13,10 +13,8 @@ func (router *Router) initializeRouter(baseRouter *mux.Router) {
 		BaseMW(IosVerify)).Methods(http.MethodGet)
 	baseRouter.HandleFunc("/.well-known/assetlinks.json",
 		BaseMW(AndroidVerify)).Methods(http.MethodGet)
-
-	var subRouter = baseRouter.PathPrefix("/lynx").Subrouter()
-	subRouter.HandleFunc("/create",
+	baseRouter.HandleFunc("/create",
 		BaseMW(CreateShortLink)).Methods(http.MethodPost)
-	subRouter.HandleFunc("/{shorturl}",
+	baseRouter.HandleFunc("/{shorturl}",
 		BaseMW(GetSourceLink)).Methods(http.MethodGet)
 }

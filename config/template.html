@@ -19,44 +19,7 @@
     <meta name="twitter:image" content="{IMAGE_CONTENT}" />
     <link href="{ICON}" rel="shortcut icon" />
     <script>
-        function isAppInstalled(scheme) {
-            var timeout;
-            var promise = new Promise(function (resolve, reject) {
-                var startTime = new Date().getTime();
-                var iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = scheme + '://';
-
-                function checkApp() {
-                    if (new Date().getTime() - startTime < 3000) {
-                        clearTimeout(timeout);
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-
-                timeout = setTimeout(checkApp, 1000);
-
-                iframe.onload = checkApp;
-                iframe.onerror = function () {
-                    resolve(false);
-                };
-
-                document.body.appendChild(iframe);
-            });
-
-            return promise;
-        }
-
-        // Example usage
-        isAppInstalled('myapp').then(function (installed) {
-            if (installed) {
-                console.log('The app is installed');
-            } else {
-                window.location = "{REDIRECT_LOCATION}"
-            }
-        });
+        window.location = "{REDIRECT_LOCATION}"
     </script>
 </head>
 

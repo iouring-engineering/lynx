@@ -23,25 +23,21 @@ app-config:
   404-html-path: config/404Template.html
   short-link-len: 5
   duplicate-retry-count: 3
-  default-url: https://nxtrade-dev-api.iouring.in/webapp
+  default-fallback-url: https://nxtrade-dev-api.iouring.in/webapp
   base-url: http://localhost:8080 
   android:
-    has-app: true #boolean
     android-default-web-url: https://nxtrade-dev-api.iouring.in/android #if there is no app this will work
     google-play-search-url: https://play.google.com/store/apps/details?id=com.nxtrad.cubeplus
-    behavior: playsearch #playsearch or custom navigation if app is not installed
-    fallback-url: https://google.com #if uri scheme failed
+    behavior: appsearch #appsearch or custom navigation if app is not installed
     package-name: com.iouring.nxtrad.dev
     sha-certificates: #can be multiple
       - "B0:9D:45:86:6A:EE:24:10:41:E8:31:06:E2:2B:1F:19:4B:B9:81:1B:9A:2D:DE:6E:81:E2:C1:75:F0:9A:63:39"
       - "20:8E:F1:9D:2B:98:D5:6A:F6:73:98:79:B4:72:A7:84:66:B6:38:97:94:6C:09:53:B9:61:76:46:BC:A5:8B:B8"
 
   ios:
-    has-app: true #boolean
     ios-default-web-url: https://dev-webapp.nxtoption.com #if there is no app this will work
     app-store-search-url: https://apps.apple.com/in/app/cubeplus-by-tradejini/id6445836933
-    behavior: playsearch #playsearch or custom navigation if app is not installed
-    fallback-url: https://google.com
+    behavior: appsearch #appsearch or custom navigation if app is not installed
     team-id: QKUC8QLL2Y
     bundle-identifier: com.iouring.nxtrad.dev.ios
     app-link-path:
