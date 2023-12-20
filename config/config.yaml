@@ -11,7 +11,7 @@ log:
 
 lynx-database:
   host: localhost
-  port: 5432
+  port: 3306
   user: root
   password: root
   database: lynx

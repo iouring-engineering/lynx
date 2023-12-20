@@ -22,8 +22,9 @@ const (
 
 // seconds
 const (
-	MIN_PER_HOUR = 60
-	MIN_PER_DAY  = 1440
+	MIN_PER_HOUR          = 60
+	MIN_PER_DAY           = 1440
+	MYSQL_DUPLICATE_INDEX = 1062
 )
 
 // error messages

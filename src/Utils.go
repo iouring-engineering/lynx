@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lib/pq"
+	"github.com/go-sql-driver/mysql"
 	"gopkg.in/yaml.v2"
 )
 
@@ -141,8 +141,8 @@ func calculateExpiry(exp string) int64 {
 }
 
 func isDuplicateLink(err error) bool {
-	if pqErr, ok := err.(*pq.Error); ok {
-		if pqErr.Code == "23505" {
+	if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+		if mysqlErr.Number == MYSQL_DUPLICATE_INDEX {
 			return true
 		}
 	}

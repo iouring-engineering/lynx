@@ -32,14 +32,13 @@ var (
 // }
 
 func (db *LynxDbType) InitLynxDbConn() error {
-	const dbDriver = "postgres"
+	const dbDriver = "mysql"
 	dbUser := config.LynxDb.User
 	dbPass := config.LynxDb.Password
 	dbName := config.LynxDb.Database
 	dbHost := config.LynxDb.Host
 	dbPort := config.LynxDb.Port
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPass, dbName)
+	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
 	var err error
 	localDb, err := sql.Open(dbDriver, connStr)
 
