@@ -110,6 +110,11 @@ func (cxt *IouHttpContext) SendResponseMsg(status string, msg string) {
 	cxt.SendResponse(resp)
 }
 
+func (cxt *IouHttpContext) sendHtmlResponse(respBytes string) {
+	cxt.RespWriter.Header().Set("Content-Type", "text/html")
+	cxt.RespWriter.Write([]byte(respBytes))
+}
+
 func InitializeHttpServer(router *mux.Router) {
 	if libConfig.Env == LOCAL {
 		router.Use(CorsMiddleware)

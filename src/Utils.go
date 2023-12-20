@@ -243,7 +243,9 @@ func frameWebPage(data DbShortLink, webUrl string) string {
 	return htmlFile
 }
 
-func sendHtmlResponse(cxt *IouHttpContext, respBytes []byte) {
-	cxt.RespWriter.Header().Set("Content-Type", "text/html")
-	cxt.RespWriter.Write(respBytes)
+func isValidJson(data string) bool {
+	var a any
+	raw := json.RawMessage(data)
+	json.Unmarshal(raw, &a)
+	return a != nil
 }

@@ -88,11 +88,11 @@ func CreateShortLink(cxt *IouHttpContext) {
 // @Success		200 {object} IouMsgResp
 // @Produce     html
 // // @Param        X-TOKENDATA header string true "Auth data"
-// @Param       shorturl   path  string true "shorturl" example(CJloO)
-// @Router      /{shorturl} [get]
+// @Param       shortcode   path  string true "shortcode" example(CJloO)
+// @Router      /{shortcode} [get]
 func GetSourceLink(cxt *IouHttpContext) {
 	req := mux.Vars(cxt.Request)
-	shortCode := req["shorturl"]
+	shortCode := req["shortcode"]
 	if shortCode == "" {
 		cxt.SendErrResponse(http.StatusOK, InvalidShortUrl)
 		return
@@ -103,7 +103,7 @@ func GetSourceLink(cxt *IouHttpContext) {
 	}
 	if !exists {
 		html := frame404WebPage()
-		sendHtmlResponse(cxt, []byte(html))
+		cxt.sendHtmlResponse(html)
 		return
 	}
 	if isDesktopWeb(cxt) {
@@ -125,5 +125,37 @@ func GetSourceLink(cxt *IouHttpContext) {
 	}
 
 	html := frameWebPage(linkData, config.AppConfig.DefaultFallbackUrl)
-	sendHtmlResponse(cxt, []byte(html))
+	cxt.sendHtmlResponse(html)
+}
+
+// @Summary		Get data
+// @Description	Get data using short code
+// @Tags        Links
+// @Id 			get-source-link-data
+// @Success		200 {object} string
+// @Produce     json
+// @Param       shortcode   path  string true "shortcode" example(CJloO)
+// @Router      /data/{shortcode} [get]
+func GetData(cxt *IouHttpContext) {
+	req := mux.Vars(cxt.Request)
+	shortCode := req["shortcode"]
+	if shortCode == "" {
+		cxt.SendErrResponse(http.StatusOK, InvalidShortUrl)
+		return
+	}
+	linkData, exists, err := LynxDb.getData(cxt, shortCode)
+	if err != nil {
+		return
+	}
+	if !exists {
+		cxt.SendNoDataResponse()
+		return
+	}
+	if isValidJson(linkData.Data) {
+		var res *Resp = &Resp{S: RESP_OK, D: json.RawMessage(linkData.Data)}
+		cxt.SendResponse(res)
+		return
+	}
+	var res *Resp = &Resp{S: RESP_OK, D: linkData.Data}
+	cxt.SendResponse(res)
 }
