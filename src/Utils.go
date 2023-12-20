@@ -135,13 +135,9 @@ func CurrentTime() string {
 }
 
 // returns in minutes
-func calculateExpiry(expType string, value int64) int64 {
-	if strings.EqualFold(expType, EXPIRY_HOURS) {
-		return value * MIN_PER_HOUR
-	}
-	if strings.EqualFold(expType, EXPIRY_DAYS) {
-		return value * MIN_PER_DAY
-	}
+func calculateExpiry(exp string) int64 {
+	var value int64 = 0
+
 	return value
 }
 
@@ -162,13 +158,13 @@ func isDuplicateLink(err error) bool {
 // 	return false
 // }
 
-// func isMobileWeb(cxt *IouHttpContext) bool {
-// 	var userAgent = cxt.Request.Header.Get("User-Agent")
-// 	if strings.Contains(userAgent, "Mobile") {
-// 		return true
-// 	}
-// 	return false
-// }
+func isMobileWeb(cxt *IouHttpContext) bool {
+	var userAgent = cxt.Request.Header.Get("User-Agent")
+	if strings.Contains(userAgent, "Mobile") {
+		return true
+	}
+	return false
+}
 
 func isDesktopWeb(cxt *IouHttpContext) bool {
 	var userAgent = cxt.Request.Header.Get("User-Agent")

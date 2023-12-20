@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-func frameDesktopBrowser(linkData DbShortLink) string {
+func frameBrowserUrl(linkData DbShortLink) string {
 	if linkData.WebUrl == "" {
 		return fmt.Sprintf("%s?data=%s", config.AppConfig.DefaultUrl, url.QueryEscape(linkData.Data))
 	}

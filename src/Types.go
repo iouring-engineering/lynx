@@ -128,14 +128,9 @@ type EndPointContext struct {
 }
 
 type MobileInputs struct {
-	Type LinkType `json:"type" enums:"default,deep,web" validate:"required"`
-	Url  LinkType `json:"url"`
-	Fbl  LinkType `json:"fbl"`
-}
-
-type DeskTopInput struct {
-	Type LinkType `json:"type" enums:"default,web" validate:"required"`
-	Url  LinkType `json:"url"`
+	MinimumVersion string `json:"mv"`
+	WebUrl         string `json:"webUrl"`
+	Fbl            string `json:"fbl"`
 }
 
 type SocialInput struct {
@@ -146,15 +141,11 @@ type SocialInput struct {
 }
 
 type CreateShortLinkRequest struct {
-	Expiry struct {
-		Type  ExpiryType `json:"type" enums:"minutes,hours,days" validate:"required"`
-		Value int64      `json:"value" validate:"required"`
-	} `json:"expiry"`
+	Expiry  string       `json:"expiry"`
 	WebUrl  string       `json:"webUrl"`
 	Data    any          `json:"data"`
 	Android MobileInputs `json:"android"`
 	Ios     MobileInputs `json:"ios"`
-	Desktop DeskTopInput `json:"desktop"`
 	Social  SocialInput  `json:"social"`
 }
 
@@ -164,7 +155,6 @@ type DbShortLink struct {
 	WebUrl    string
 	Android   string
 	Ios       string
-	Desktop   string
 	Social    string
 	Expiry    int64 // in minutes
 }

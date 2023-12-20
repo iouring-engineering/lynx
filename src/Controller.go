@@ -30,9 +30,8 @@ func CreateShortLink(cxt *IouHttpContext) {
 	}
 	androidStr, _ := json.Marshal(request.Android)
 	iosStr, _ := json.Marshal(request.Ios)
-	desktopStr, _ := json.Marshal(request.Desktop)
 	socialStr, _ := json.Marshal(request.Social)
-	var expiryValue = calculateExpiry(string(request.Expiry.Type), request.Expiry.Value)
+	var expiryValue = calculateExpiry(request.Expiry)
 	var shortCode string
 	var retryCount = 0
 	strData, err := getDataString(request.Data)
@@ -48,7 +47,6 @@ func CreateShortLink(cxt *IouHttpContext) {
 			WebUrl:    request.WebUrl,
 			Android:   string(androidStr),
 			Ios:       string(iosStr),
-			Desktop:   string(desktopStr),
 			Social:    string(socialStr),
 			Expiry:    expiryValue,
 		})
@@ -103,8 +101,8 @@ func GetSourceLink(cxt *IouHttpContext) {
 		sendHtmlResponse(cxt, []byte(html))
 		return
 	}
-	if isDesktopWeb(cxt) {
-		var url string = frameDesktopBrowser(linkData)
+	if isDesktopWeb(cxt) || isMobileWeb(cxt) {
+		var url string = frameBrowserUrl(linkData)
 		html := frameWebPage(linkData, url)
 		sendHtmlResponse(cxt, []byte(html))
 		return
