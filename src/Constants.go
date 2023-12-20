@@ -62,3 +62,9 @@ const (
 	UAT   = "UAT"
 	PROD  = "PROD"
 )
+
+// android constants
+const (
+	ANDROID_NAMESPACE = "android_app"
+	ANDROID_RELATION  = "delegate_permission/common.handle_all_urls"
+)

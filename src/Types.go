@@ -52,35 +52,23 @@ type Config struct {
 		HtmlFilePath        string `yaml:"html-path"`
 		HtmlFilePath404     string `yaml:"404-html-path"`
 		Android             struct {
-			HasApp              bool      `yaml:"has-app"`
-			AndroidUrl          string    `yaml:"android-url"`
-			AppUriScheme        string    `yaml:"app-uri-scheme"`
-			Behaviour           AppSearch `yaml:"behavior"`
-			GooglePlaySearchUrl string    `yaml:"google-play-search-url"`
-			CustomUrl           struct {
-				FallbackUrl string `yaml:"fallback-url"`
-				PackageName string `yaml:"package-name"`
-			} `yaml:"custom-url"`
-			AppLinks struct {
-				Enable      bool     `yaml:"enable"`
-				Certificate []string `yaml:"certificate"`
-			} `yaml:"app-links"`
+			HasApp               bool      `yaml:"has-app"`
+			AndroidDefaultWebUrl string    `yaml:"android-default-web-url"`
+			GooglePlaySearchUrl  string    `yaml:"google-play-search-url"`
+			Behaviour            AppSearch `yaml:"behavior"`
+			FallbackUrl          string    `yaml:"fallback-url"`
+			PackageName          string    `yaml:"package-name"`
+			Certificate          []string  `yaml:"sha-certificates"`
 		} `yaml:"android"`
 		Ios struct {
 			HasApp            bool      `yaml:"has-app"`
-			IosUrl            string    `yaml:"ios-url"`
-			AppUriScheme      string    `yaml:"app-uri-scheme"`
-			Behaviour         AppSearch `yaml:"behavior"`
+			IosDefaultWebUrl  string    `yaml:"ios-default-web-url"`
 			AppStoreSearchUrl string    `yaml:"app-store-search-url"`
-			CustomUrl         struct {
-				FallbackUrl string `yaml:"fallback-url"`
-				PackageName string `yaml:"app-store-id"`
-			} `yaml:"custom-url"`
-			UniversalLinks struct {
-				Enable           bool   `yaml:"enable"`
-				BundleIdentifier string `yaml:"bundle-identifiers"`
-				AppPrefix        string `yaml:"app-prefix"`
-			}
+			Behaviour         AppSearch `yaml:"behavior"`
+			FallbackUrl       string    `yaml:"fallback-url"`
+			TeamId            string    `yaml:"team-id"`
+			BundleIdentifier  string    `yaml:"bundle-identifier"`
+			AppLinkPath       []string  `yaml:"app-link-path"`
 		} `yaml:"ios"`
 		SocialMedia struct {
 			Title        string `yaml:"title"`
@@ -168,4 +156,28 @@ type CreateShortLinkResponse struct {
 		Icon  string `json:"icon"`
 		Image string `json:"image"`
 	} `json:"og"`
+}
+
+type IosAppDetails struct {
+	AppId string   `json:"appID"`
+	Paths []string `json:"paths"`
+}
+
+type IosAppLinks struct {
+	Apps    []string        `json:"apps"`
+	Details []IosAppDetails `json:"details"`
+}
+type IosAppVerifyResponse struct {
+	AppLinks IosAppLinks `json:"applinks"`
+}
+
+type AndroidTarget struct {
+	NameSpace   string   `json:"namespace"`
+	PackageName string   `json:"package_name"`
+	Sha256      []string `json:"sha256_cert_fingerprints"`
+}
+
+type AndroidVerifyResponse struct {
+	Relation []string      `json:"relation"`
+	Target   AndroidTarget `json:"target"`
 }
