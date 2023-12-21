@@ -106,11 +106,6 @@ func GetSourceLink(cxt *IouHttpContext) {
 		cxt.sendHtmlResponse(html)
 		return
 	}
-	if isDesktopWeb(cxt) {
-		var url string = frameWebPage(linkData, linkData.WebUrl)
-		cxt.SendRedirect(url)
-		return
-	}
 
 	if isAndroidWeb(cxt) {
 		var url string = frameAndroidUrl(linkData.Android)
@@ -124,7 +119,7 @@ func GetSourceLink(cxt *IouHttpContext) {
 		return
 	}
 
-	html := frameWebPage(linkData, config.AppConfig.DefaultFallbackUrl)
+	html := frameWebPage(linkData)
 	cxt.sendHtmlResponse(html)
 }
 

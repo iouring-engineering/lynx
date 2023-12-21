@@ -165,13 +165,13 @@ func isIosWeb(cxt *IouHttpContext) bool {
 	return true
 }
 
-func isDesktopWeb(cxt *IouHttpContext) bool {
-	var userAgent = cxt.Request.Header.Get("User-Agent")
-	if strings.Contains(userAgent, "Mobile") {
-		return false
-	}
-	return true
-}
+// func isDesktopWeb(cxt *IouHttpContext) bool {
+// 	var userAgent = cxt.Request.Header.Get("User-Agent")
+// 	if strings.Contains(userAgent, "Mobile") {
+// 		return false
+// 	}
+// 	return true
+// }
 
 func isMap(value any) bool {
 	kind := reflect.TypeOf(value).Kind()
@@ -225,7 +225,7 @@ func frame404WebPage() string {
 	return htmlCache404
 }
 
-func frameWebPage(data DbShortLink, webUrl string) string {
+func frameWebPage(data DbShortLink) string {
 	var social SocialInput
 	json.Unmarshal([]byte(data.Social), &social)
 	var htmlFile = htmlCache
@@ -234,7 +234,7 @@ func frameWebPage(data DbShortLink, webUrl string) string {
 		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
 		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
 		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
-		"{REDIRECT_LOCATION}": getValueOrDefault(webUrl, config.AppConfig.DefaultFallbackUrl),
+		"{REDIRECT_LOCATION}": frameCompleteUrl(data),
 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
 	}
 	for key, val := range replacements {
