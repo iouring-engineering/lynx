@@ -107,7 +107,7 @@ func GetSourceLink(cxt *IouHttpContext) {
 		return
 	}
 	if isDesktopWeb(cxt) {
-		var url string = frameBrowserUrl(linkData)
+		var url string = frameWebPage(linkData, linkData.WebUrl)
 		cxt.SendRedirect(url)
 		return
 	}

@@ -2,17 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"net/url"
 )
-
-func frameBrowserUrl(linkData DbShortLink) string {
-	unescaped := url.QueryEscape(linkData.Data)
-	if linkData.WebUrl == "" {
-		return fmt.Sprintf("%s?data=%s", config.AppConfig.DefaultFallbackUrl, unescaped)
-	}
-	return fmt.Sprintf("%s?data=%s", linkData.WebUrl, unescaped)
-}
 
 func frameAndroidUrl(android string) string {
 	var parsed MobileInputs
