@@ -11,24 +11,6 @@ var (
 	LynxDb *LynxDbType
 )
 
-// func (db *LynxDbType) RetryDbConn() {
-// 	go func() {
-// 		ticker := time.NewTicker(5 * time.Second)
-// 		for range ticker.C {
-// 			err := LynxDb.Db.Ping()
-// 			if err != nil {
-// 				InfoLogger.Println("Lost connection to the database. Reconnecting...")
-// 				err = db.InitLynxDbConn()
-// 				if err != nil {
-// 					InfoLogger.Println("Failed to reconnect:", err)
-// 				} else {
-// 					InfoLogger.Println("Reconnected to the database.")
-// 				}
-// 			}
-// 		}
-// 	}()
-// }
-
 func (db *LynxDbType) InitLynxDbConn() error {
 	const dbDriver = "mysql"
 	dbUser := config.LynxDb.User
@@ -55,12 +37,6 @@ func (db *LynxDbType) InitLynxDbConn() error {
 func (db *LynxDbType) getEndPoint(cxt *IouHttpContext) EndPointContext {
 	return EndPointContext{Db: LynxDb.Db, EndpointName: LynxDb.Endpoint, IouHttpContext: cxt}
 }
-
-// func (db *LynxDbType) checkConn(cxt *IouHttpContext) error {
-// 	end := db.getEndPoint(cxt)
-// 	err := end.Db.Ping()
-// 	return err
-// }
 
 func (db *LynxDbType) insertShortLink(cxt *IouHttpContext, input DbShortLink) error {
 	_, err := IODBPrepareExec(db.getEndPoint(cxt), INSERT_SHORT_LINK, input.ShortCode, input.Data, input.WebUrl,

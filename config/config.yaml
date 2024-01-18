@@ -19,13 +19,14 @@ lynx-database:
   maxOpen: 10
 
 app-config:
-  html-path: config/template.html
+  web-html-path: config/web-template.html
   404-html-path: config/404Template.html
   short-link-len: 5
   duplicate-retry-count: 3
   default-fallback-url: https://nxtrade-dev-api.iouring.in/webapp
   base-url: http://localhost:8080 
   android:
+    html-path: config/android-template.html
     android-default-web-url: https://nxtrade-dev-api.iouring.in/android #if there is no app this will work
     google-play-search-url: https://play.google.com/store/apps/details?id=com.nxtrad.cubeplus
     behavior: appsearch #appsearch or custom navigation if app is not installed
@@ -35,6 +36,7 @@ app-config:
       - "20:8E:F1:9D:2B:98:D5:6A:F6:73:98:79:B4:72:A7:84:66:B6:38:97:94:6C:09:53:B9:61:76:46:BC:A5:8B:B8"
 
   ios:
+    html-path: config/ios-template.html
     ios-default-web-url: https://dev-webapp.nxtoption.com #if there is no app this will work
     app-store-search-url: https://apps.apple.com/in/app/cubeplus-by-tradejini/id6445836933
     behavior: appsearch #appsearch or custom navigation if app is not installed

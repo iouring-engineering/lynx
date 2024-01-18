@@ -32,7 +32,10 @@ func CreateShortLink(cxt *IouHttpContext) {
 	androidStr, _ := json.Marshal(request.Android)
 	iosStr, _ := json.Marshal(request.Ios)
 	socialStr, _ := json.Marshal(request.Social)
-	var expiryValue = calculateExpiry(request.Expiry)
+	if !validateExpiry(&request.Expiry) {
+		cxt.SendBadReqResponse("Invalid expiry")
+		return
+	}
 	var shortCode string
 	var retryCount = 0
 	strData, err := getDataString(request.Data)
@@ -40,12 +43,10 @@ func CreateShortLink(cxt *IouHttpContext) {
 		cxt.SendBadReqResponse("Invalid data")
 		return
 	}
+
 	for {
 		shortCode = genShortUrl()
-		var dbExp = sql.NullString{String: "", Valid: false}
-		if expiryValue != 0 {
-
-		}
+		var dbExp = sql.NullString{String: request.Expiry, Valid: true}
 		err = LynxDb.insertShortLink(cxt, DbShortLink{
 			ShortCode: shortCode,
 			Data:      strData,
@@ -118,7 +119,6 @@ func GetSourceLink(cxt *IouHttpContext) {
 		cxt.SendRedirect(url)
 		return
 	}
-
 	html := frameWebPage(linkData)
 	cxt.sendHtmlResponse(html)
 }

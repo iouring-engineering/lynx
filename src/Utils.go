@@ -135,9 +135,14 @@ func CurrentTime() string {
 }
 
 // returns in minutes
-func calculateExpiry(exp string) int64 {
-	var value int64 = 0
-	return value
+// 18-01-2024 17:57:00 date format
+func validateExpiry(exp *string) bool {
+	t, err := time.ParseInLocation("02-01-2006 15:04:05", *exp, time.Local)
+	if err != nil {
+		return false
+	}
+	*exp = t.Format("2006-01-02 15:04:05")
+	return true
 }
 
 func isDuplicateLink(err error) bool {
@@ -152,26 +157,18 @@ func isDuplicateLink(err error) bool {
 func isAndroidWeb(cxt *IouHttpContext) bool {
 	var userAgent = cxt.Request.Header.Get("User-Agent")
 	if strings.Contains(userAgent, "Android") {
-		return false
+		return true
 	}
-	return true
+	return false
 }
 
 func isIosWeb(cxt *IouHttpContext) bool {
 	var userAgent = cxt.Request.Header.Get("User-Agent")
 	if strings.Contains(userAgent, "iPhone") || strings.Contains(userAgent, "iPad") {
-		return false
+		return true
 	}
-	return true
+	return false
 }
-
-// func isDesktopWeb(cxt *IouHttpContext) bool {
-// 	var userAgent = cxt.Request.Header.Get("User-Agent")
-// 	if strings.Contains(userAgent, "Mobile") {
-// 		return false
-// 	}
-// 	return true
-// }
 
 func isMap(value any) bool {
 	kind := reflect.TypeOf(value).Kind()
@@ -179,12 +176,15 @@ func isMap(value any) bool {
 }
 
 func getDataString(data any) (string, error) {
-	if isMap(data) {
+	if data != nil && isMap(data) {
 		jsonBytes, err := json.Marshal(data)
 		if err != nil {
 			return "", err
 		}
 		return string(jsonBytes), nil
+	}
+	if data == nil {
+		return "", nil
 	}
 	return fmt.Sprint(data), nil
 }
@@ -197,16 +197,26 @@ func getValueOrDefault(value string, defaultValue string) string {
 }
 
 func loadHtmlFile() error {
-	file, err := os.ReadFile(config.AppConfig.HtmlFilePath)
+	file, err := os.ReadFile(config.AppConfig.WebHtmlFilePath)
 	if err != nil {
 		return err
 	}
-	htmlCache = string(file)
+	webHtmlCache = string(file)
 	file, err = os.ReadFile(config.AppConfig.HtmlFilePath404)
 	if err != nil {
 		return err
 	}
 	htmlCache404 = string(file)
+	file, err = os.ReadFile(config.AppConfig.Android.HtmlFilePath)
+	if err != nil {
+		return err
+	}
+	androidHtmlCache = string(file)
+	file, err = os.ReadFile(config.AppConfig.Ios.HtmlFilePath)
+	if err != nil {
+		return err
+	}
+	iosHtmlCache = string(file)
 	return nil
 }
 
@@ -228,7 +238,7 @@ func frame404WebPage() string {
 func frameWebPage(data DbShortLink) string {
 	var social SocialInput
 	json.Unmarshal([]byte(data.Social), &social)
-	var htmlFile = htmlCache
+	var htmlFile = webHtmlCache
 	replacements := map[string]string{
 		"{TITLE}":             getValueOrDefault(social.Title, config.AppConfig.SocialMedia.Title),
 		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),

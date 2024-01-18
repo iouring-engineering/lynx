@@ -2,15 +2,6 @@ package main
 
 import "fmt"
 
-// @Summary		Verify IOS Domain
-// @Description	verify ios appLink domain
-// @Tags        Verify
-// @Id 			verify-short-link-ios
-// @Accept      json
-// @Success		200  {object} IosAppVerifyResponse
-// @Produce     json
-// @Security 	http_bearer
-// @Router      /.well-known/apple-app-site-association [get]
 func IosVerify(cxt *IouHttpContext) {
 	var resp IosAppVerifyResponse
 	var appLinks IosAppLinks

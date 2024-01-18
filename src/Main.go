@@ -9,8 +9,6 @@ import (
 // @description					Micro Module to create and share short links
 // @tag.name					Links
 // @tag.description				Creating and sharing short links
-// @tag.name					Verify
-// @tag.description				Verifying android and ios domains
 // @host 						localhost:8080
 // @schemes 					http
 // @BasePath					/lynx

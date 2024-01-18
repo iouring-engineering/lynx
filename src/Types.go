@@ -28,8 +28,8 @@ type Database struct {
 }
 
 const (
-	APP_SEARCH AppSearch = "APP_SEARCH"
-	CUSTOM     AppSearch = "CUSTOM"
+	APP_SEARCH AppSearch = "appsearch"
+	CUSTOM     AppSearch = "custom"
 )
 
 type Resp struct {
@@ -49,9 +49,10 @@ type Config struct {
 		ShortLinkLen        int    `yaml:"short-link-len"`
 		DuplicateRetryCount int    `yaml:"duplicate-retry-count"`
 		DefaultFallbackUrl  string `yaml:"default-fallback-url"`
-		HtmlFilePath        string `yaml:"html-path"`
+		WebHtmlFilePath     string `yaml:"web-html-path"`
 		HtmlFilePath404     string `yaml:"404-html-path"`
 		Android             struct {
+			HtmlFilePath         string    `yaml:"html-path"`
 			AndroidDefaultWebUrl string    `yaml:"android-default-web-url"`
 			GooglePlaySearchUrl  string    `yaml:"google-play-search-url"`
 			Behaviour            AppSearch `yaml:"behavior"`
@@ -59,6 +60,7 @@ type Config struct {
 			Certificate          []string  `yaml:"sha-certificates"`
 		} `yaml:"android"`
 		Ios struct {
+			HtmlFilePath      string    `yaml:"html-path"`
 			IosDefaultWebUrl  string    `yaml:"ios-default-web-url"`
 			AppStoreSearchUrl string    `yaml:"app-store-search-url"`
 			Behaviour         AppSearch `yaml:"behavior"`
