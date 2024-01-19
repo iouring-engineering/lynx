@@ -1,13 +1,6 @@
 package main
 
-import (
-	"errors"
-)
-
 func validateAndroid(input MobileInputs) error {
-	if input.Fbl == "" {
-		return errors.New("Fallback url and web url cannot be used at same time")
-	}
 	return nil
 }
 

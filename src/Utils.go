@@ -137,6 +137,9 @@ func CurrentTime() string {
 // returns in minutes
 // 18-01-2024 17:57:00 date format
 func validateExpiry(exp *string) bool {
+	if *exp == "" {
+		return true
+	}
 	t, err := time.ParseInLocation("02-01-2006 15:04:05", *exp, time.Local)
 	if err != nil {
 		return false
