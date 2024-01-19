@@ -11,7 +11,7 @@ import (
 // @tag.description				Creating and sharing short links
 // @host 						localhost:8080
 // @schemes 					http
-// @BasePath					/lynx
+// @BasePath					/
 // @securityDefinitions.apikey	http_bearer
 // @in 							header
 // @name 						Authorization
