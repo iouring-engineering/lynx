@@ -109,14 +109,16 @@ func GetSourceLink(cxt *IouHttpContext) {
 	}
 
 	if isAndroidWeb(cxt) {
-		var url string = frameAndroidUrl(linkData.Android)
-		cxt.SendRedirect(url)
+		var url string = frameAndroidUrl(linkData.Android, shortCode)
+		html := frameAndroidWebPage(linkData, url)
+		cxt.sendHtmlResponse(html)
 		return
 	}
 
 	if isIosWeb(cxt) {
 		var url string = frameIosUrl(linkData.Ios)
-		cxt.SendRedirect(url)
+		html := frameIosWebPage(linkData, url, shortCode)
+		cxt.sendHtmlResponse(html)
 		return
 	}
 	html := frameWebPage(linkData)

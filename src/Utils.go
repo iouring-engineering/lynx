@@ -235,6 +235,43 @@ func frame404WebPage() string {
 	return htmlCache404
 }
 
+func frameAndroidWebPage(data DbShortLink, link string) string {
+	var social SocialInput
+	json.Unmarshal([]byte(data.Social), &social)
+	var htmlFile = androidHtmlCache
+	replacements := map[string]string{
+		"{TITLE}":             getValueOrDefault(social.Title, config.AppConfig.SocialMedia.Title),
+		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
+		"{URL_CONTENT}":       link,
+		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
+		"{REDIRECT_LOCATION}": link,
+		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
+	}
+	for key, val := range replacements {
+		htmlFile = strings.ReplaceAll(htmlFile, key, val)
+	}
+	return htmlFile
+}
+
+func frameIosWebPage(data DbShortLink, link, shortCode string) string {
+	var social SocialInput
+	json.Unmarshal([]byte(data.Social), &social)
+	var htmlFile = iosHtmlCache
+	replacements := map[string]string{
+		"{TITLE}":             getValueOrDefault(social.Title, config.AppConfig.SocialMedia.Title),
+		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
+		"{URL_CONTENT}":       link,
+		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
+		"{REDIRECT_LOCATION}": link,
+		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
+		"{SHORT_CODE}":        shortCode,
+	}
+	for key, val := range replacements {
+		htmlFile = strings.ReplaceAll(htmlFile, key, val)
+	}
+	return htmlFile
+}
+
 func frameWebPage(data DbShortLink) string {
 	var social SocialInput
 	json.Unmarshal([]byte(data.Social), &social)

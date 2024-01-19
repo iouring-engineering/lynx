@@ -18,15 +18,72 @@
     <meta name="twitter:description" content="{DESCRIPTION}" />
     <meta name="twitter:image" content="{IMAGE_CONTENT}" />
     <link href="{ICON}" rel="shortcut icon" />
-    <script>
-        window.location = "{REDIRECT_LOCATION}"
-    </script>
+    <style>
+        html,
+        head {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .open-btn {
+            margin-top: 10px;
+            width: 85px;
+            height: 30px;
+        }
+    </style>
 </head>
 
 <body>
-    <p>{TITLE}</p>
-    <p><a href="{TITLE}">Click
-            here</a> if you are not redirected automatically</p>
+    <div>
+        <input class="checkbox" checked="checked" type="checkbox" id="copy-allowed" name="copy-check" value="copy">
+        <label>
+            Continue with the app launch, A link will be copied to continue to this page.
+        </label>
+    </div>
+    <input type="text" style="display: none;" id="hiddenInput" value="{SHORT_CODE}">
+    <button class="open-btn" id="myButton" onclick="copyToClipboard()">Open</button>
 </body>
+<script>
+    function copyToClipboard() {
+        var el = document.getElementById("hiddenInput");
+        hiddenInput.style.display = "block";
+        var checkboxElement = document.getElementById("copy-allowed");
+        if (checkboxElement.checked) {
+            if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
+                var editable = el.contentEditable;
+                var readOnly = el.readOnly;
+                el.contentEditable = true;
+                el.readOnly = true;
+
+                var range = document.createRange();
+                range.selectNodeContents(el);
+
+                var selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                el.setSelectionRange(0, 999999);
+
+                el.contentEditable = editable;
+                el.readOnly = readOnly;
+            } else {
+                el.select()
+            }
+            document.execCommand('copy');
+            window.location = "{REDIRECT_LOCATION}"
+        }
+        hiddenInput.style.display = "none";
+    }
+</script>
 
 </html>

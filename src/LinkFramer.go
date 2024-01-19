@@ -14,12 +14,13 @@ func frameCompleteUrl(linkData DbShortLink) string {
 	return fmt.Sprintf("%s?data=%s", linkData.WebUrl, unescaped)
 }
 
-func frameAndroidUrl(android string) string {
+func frameAndroidUrl(android, shortCode string) string {
 	var parsed MobileInputs
 	json.Unmarshal([]byte(android), &parsed)
 	if parsed.Fbl == "" {
 		if config.AppConfig.Android.Behaviour == APP_SEARCH {
-			return config.AppConfig.Android.GooglePlaySearchUrl
+			var play = config.AppConfig.Android.GooglePlaySearchUrl
+			return fmt.Sprintf("%s&referrer=%s", play, shortCode)
 		} else if config.AppConfig.Android.AndroidDefaultWebUrl != "" {
 			return config.AppConfig.Android.AndroidDefaultWebUrl
 		} else {
