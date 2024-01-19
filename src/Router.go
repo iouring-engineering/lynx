@@ -9,7 +9,7 @@ import (
 type Router struct{}
 
 func (router *Router) initializeRouter(baseRouter *mux.Router) {
-	baseRouter = baseRouter.PathPrefix("/lynx").Subrouter()
+	baseRouter = baseRouter.PathPrefix(config.BasePath).Subrouter()
 	baseRouter.HandleFunc("/.well-known/apple-app-site-association",
 		BaseMW(IosVerify)).Methods(http.MethodGet)
 	baseRouter.HandleFunc("/.well-known/assetlinks.json",

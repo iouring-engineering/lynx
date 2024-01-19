@@ -4,6 +4,8 @@ http:
   writeTimeout: 15
   readTimeout: 15
 
+base-path: /
+
 log:
   dir:
   file: lynx.log

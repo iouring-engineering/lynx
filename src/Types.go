@@ -45,6 +45,7 @@ type IouMsgResp struct {
 
 type Config struct {
 	LynxDb    Database `yaml:"lynx-database"`
+	BasePath  string   `yaml:"base-path"`
 	AppConfig struct {
 		ShortLinkLen        int    `yaml:"short-link-len"`
 		DuplicateRetryCount int    `yaml:"duplicate-retry-count"`
