@@ -1,0 +1,7 @@
+{
+    "exec": "swag init -g src/main.go --output .service-validations --outputTypes yaml && npx swagger2openapi -o .service-validations/service-spec.yaml .service-validations/swagger.yaml && go run .\\src -config config/config.yaml",
+    "watch": [
+        "src"
+    ],
+    "ext": "go"
+}

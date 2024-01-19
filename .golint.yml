@@ -1,0 +1,109 @@
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+
+linters-settings:
+  dogsled:
+    max-blank-identifiers: 3
+  funlen:
+    lines: 60
+    statements: 60
+  gocognit:
+    min-complexity: 10 #maximum ladder if
+  nestif:
+    min-complexity: 4 #maximum nested if
+  goconst:  #Finds repeated strings that could be replaced by a constant
+    min-len: 3
+    min-occurrences: 1
+  godox: #validating comments
+    keywords:
+      - NOTE
+      - OPTIMIZE
+      - HACK
+      - TODO
+      - FIXME
+      - BUG
+  gofmt: #code formatting and replacing
+    simplify: false
+    rewrite-rules:
+      - pattern: 'interface{}'
+        replacement: 'any'
+      - pattern: 'a[b:len(a)]'
+        replacement: 'a[b:]'
+  gomnd: #magic numbers detection
+    checks:
+      - argument
+      - case
+      - condition
+      - operation
+      - return
+      - assign
+    ignored-numbers:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '0666'
+      - '0755'
+    ignored-functions:
+      - 'math.*'
+      - 'http.StatusText'
+  lll:
+    line-length: 120
+    tab-width: 1
+  unparam: #Reports unused function parameters
+    check-exported: false
+  unused:
+    check-exported: false
+  whitespace:
+    multi-if: false
+    multi-func: false
+  wsl: #white space linter
+    strict-append: true
+    allow-assign-and-call: true
+    allow-multiline-assign: true
+    allow-cuddle-declarations: false
+    allow-trailing-comment: false
+    force-case-trailing-whitespace: 0
+    force-err-cuddling: false
+    allow-separated-leading-comment: false
+  gosec: #Inspects source code for security problems
+    includes:
+      - G301 # Poor file permissions used when creating a directory
+      - G302 # Poor file permissions used with chmod
+      - G401 # Detect the usage of DES, RC4, MD5 or SHA1
+      # - G402 # Look for bad TLS connection settings
+      - G403 # Ensure minimum RSA key length of 2048 bits
+      - G404 # Insecure random number source (rand)
+    excludes:
+      - G201 #to exclude Sprintf
+  maligned:
+    # Print struct with more effective memory layout or not.
+    # Default: false
+    suggest-new: true
+
+
+linters:
+  disable-all: true
+  enable:
+    - bodyclose
+    - dogsled
+    - funlen
+    - gochecknoinits
+    - goconst
+    - gofmt
+    - godox
+    - gomnd
+    - goprintffuncname #myLog should be named myLogf by Go convention:
+    - gosec
+    - lll
+    - nestif
+    - noctx
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+    - maligned #https://medium.com/@sebassegros/golang-dealing-with-maligned-structs-9b77bacf4b97
