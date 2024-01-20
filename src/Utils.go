@@ -205,21 +205,25 @@ func loadHtmlFile() error {
 		return err
 	}
 	webHtmlCache = string(file)
+	InfoLogger.Println("loaded web html")
 	file, err = os.ReadFile(config.AppConfig.HtmlFilePath404)
 	if err != nil {
 		return err
 	}
 	htmlCache404 = string(file)
+	InfoLogger.Println("loaded 404 html")
 	file, err = os.ReadFile(config.AppConfig.Android.HtmlFilePath)
 	if err != nil {
 		return err
 	}
 	androidHtmlCache = string(file)
+	InfoLogger.Println("loaded android html")
 	file, err = os.ReadFile(config.AppConfig.Ios.HtmlFilePath)
 	if err != nil {
 		return err
 	}
 	iosHtmlCache = string(file)
+	InfoLogger.Println("loaded ios html")
 	return nil
 }
 

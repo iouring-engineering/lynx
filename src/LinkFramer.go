@@ -4,14 +4,46 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 )
 
-func frameCompleteUrl(linkData DbShortLink) string {
-	unescaped := url.QueryEscape(linkData.Data)
-	if linkData.WebUrl == "" {
-		return fmt.Sprintf("%s?data=%s", config.AppConfig.DefaultFallbackUrl, unescaped)
+func anyToString(value any) string {
+	switch v := value.(type) {
+	case int:
+		return strconv.Itoa(v)
+	case float64:
+		return strconv.FormatFloat(v, 'f', -1, 64)
+	default:
+		return fmt.Sprintf("%v", v)
 	}
-	return fmt.Sprintf("%s?data=%s", linkData.WebUrl, unescaped)
+}
+
+func frameCompleteUrl(linkData DbShortLink) string {
+	var m map[string]any = make(map[string]any)
+	err := json.Unmarshal([]byte(linkData.Data), &m)
+	ErrorLogger.Println(err)
+	m["shortcode"] = linkData.ShortCode
+	var urlData = ""
+	var idx = 0
+	for key, value := range m {
+		urlData += fmt.Sprintf("%s=%s", url.QueryEscape(key), url.QueryEscape(anyToString(value)))
+		if idx != (len(m) - 1) {
+			urlData += "&"
+		}
+		idx++
+	}
+	parsed, err := url.Parse(linkData.WebUrl)
+	if len(parsed.Query()) > 0 {
+		if linkData.WebUrl == "" {
+			return fmt.Sprintf("%s&%s", config.AppConfig.DefaultFallbackUrl, urlData)
+		}
+		return fmt.Sprintf("%s&%s", linkData.WebUrl, urlData)
+	}
+
+	if linkData.WebUrl == "" {
+		return fmt.Sprintf("%s?%s", config.AppConfig.DefaultFallbackUrl, urlData)
+	}
+	return fmt.Sprintf("%s?%s", linkData.WebUrl, urlData)
 }
 
 func frameAndroidUrl(android, shortCode string) string {

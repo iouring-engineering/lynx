@@ -180,3 +180,8 @@ type AndroidVerifyResponse struct {
 	Relation []string      `json:"relation"`
 	Target   AndroidTarget `json:"target"`
 }
+
+type ShortCodeDataResponse struct {
+	Input     any    `json:"input"`
+	ShortCode string `json:"shortcode"`
+}

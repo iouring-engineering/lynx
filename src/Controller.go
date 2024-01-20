@@ -23,7 +23,8 @@ func CreateShortLink(cxt *IouHttpContext) {
 	var request CreateShortLinkRequest
 	err := ReqBodyDecode(cxt, &request)
 	if err != nil {
-
+		cxt.SendBadReqResponse(err.Error())
+		return
 	}
 	if err = validateCreateLink(request); err != nil {
 		cxt.SendBadReqResponse(err.Error())
@@ -46,28 +47,26 @@ func CreateShortLink(cxt *IouHttpContext) {
 
 	for {
 		shortCode = genShortUrl()
-		var dbExp = sql.NullString{String: request.Expiry, Valid: true}
-		err = LynxDb.insertShortLink(cxt, DbShortLink{
-			ShortCode: shortCode,
-			Data:      strData,
-			WebUrl:    request.WebUrl,
-			Android:   string(androidStr),
-			Ios:       string(iosStr),
-			Social:    string(socialStr),
-			Expiry:    dbExp,
-		})
+		var dbExp = sql.NullString{Valid: false}
+		if request.Expiry != "" {
+			dbExp = sql.NullString{String: request.Expiry, Valid: true}
+		}
+		err = LynxDb.insertShortLink(cxt, DbShortLink{Data: strData, WebUrl: request.WebUrl,
+			Android: string(androidStr), Ios: string(iosStr), Social: string(socialStr),
+			Expiry: dbExp, ShortCode: shortCode})
 		retryCount++
 		if err != nil && isDuplicateLink(err) {
 			if retryCount <= config.AppConfig.DuplicateRetryCount {
 				continue
 			} else {
-				var res = &Resp{
-					S:   RESP_ERROR,
-					Msg: ShortLinkFailed,
-				}
+				var res = &Resp{S: RESP_ERROR, Msg: ShortLinkFailed}
 				cxt.SendResponse(res)
 				return
 			}
+		}
+		if err != nil {
+			cxt.SendErrResponse(http.StatusOK, EndpointErr)
+			return
 		}
 		break
 	}
@@ -75,7 +74,8 @@ func CreateShortLink(cxt *IouHttpContext) {
 	var res = &Resp{
 		S: RESP_OK,
 		D: map[string]string{
-			"link": fmt.Sprintf("%s/%s", config.AppConfig.BaseUrl, shortCode),
+			"link":      fmt.Sprintf("%s/%s", config.AppConfig.BaseUrl, shortCode),
+			"shortcode": shortCode,
 		},
 	}
 	cxt.SendResponse(res)
@@ -129,7 +129,7 @@ func GetSourceLink(cxt *IouHttpContext) {
 // @Description	Get data using short code
 // @Tags        Links
 // @Id 			get-source-link-data
-// @Success		200 {object} string
+// @Success		200 {object} ShortCodeDataResponse
 // @Produce     json
 // @Param       shortcode   path  string true "shortcode" example(CJloO)
 // @Router      /data/{shortcode} [get]
@@ -149,10 +149,12 @@ func GetData(cxt *IouHttpContext) {
 		return
 	}
 	if isValidJson(linkData.Data) {
-		var res *Resp = &Resp{S: RESP_OK, D: json.RawMessage(linkData.Data)}
+		var r = ShortCodeDataResponse{Input: json.RawMessage(linkData.Data), ShortCode: linkData.ShortCode}
+		var res *Resp = &Resp{S: RESP_OK, D: r}
 		cxt.SendResponse(res)
 		return
 	}
-	var res *Resp = &Resp{S: RESP_OK, D: linkData.Data}
+	var r = ShortCodeDataResponse{Input: linkData.Data, ShortCode: linkData.ShortCode}
+	var res *Resp = &Resp{S: RESP_OK, D: r}
 	cxt.SendResponse(res)
 }
