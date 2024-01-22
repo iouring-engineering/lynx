@@ -124,7 +124,7 @@ type SocialInput struct {
 	Title       string `json:"title" validate:"optional"`
 	Description string `json:"description" validate:"optional"`
 	ImgUrl      string `json:"imgUrl" validate:"optional"`
-	Icon        string `json:"short-icon"`
+	Icon        string `json:"shortIcon"`
 }
 
 type CreateShortLinkRequest struct {
