@@ -98,17 +98,13 @@ func GetSourceLink(cxt *IouHttpContext) {
 		cxt.SendErrResponse(http.StatusOK, InvalidShortUrl)
 		return
 	}
-	linkData, exists, err := LynxDb.getData(cxt, shortCode)
+	linkData, _, err := LynxDb.getData(cxt, shortCode)
 	if err != nil {
-		return
-	}
-	if !exists {
-		html := frame404WebPage()
-		cxt.sendHtmlResponse(html)
+		cxt.SendErrResponse(http.StatusOK, InvalidShortUrl)
 		return
 	}
 
-	if isAndroidWeb(cxt) {
+	if !isAndroidWeb(cxt) {
 		var url string = frameAndroidUrl(linkData.Android, shortCode)
 		html := frameAndroidWebPage(linkData, url)
 		cxt.sendHtmlResponse(html)

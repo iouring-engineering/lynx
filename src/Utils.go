@@ -210,12 +210,12 @@ func loadHtmlFile() error {
 	if err != nil {
 		return err
 	}
-	htmlCache404 = string(file)
-	InfoLogger.Println("loaded 404 html")
-	file, err = os.ReadFile(config.AppConfig.Android.HtmlFilePath)
-	if err != nil {
-		return err
-	}
+	// htmlCache404 = string(file)
+	// InfoLogger.Println("loaded 404 html")
+	// file, err = os.ReadFile(config.AppConfig.Android.HtmlFilePath)
+	// if err != nil {
+	// 	return err
+	// }
 	androidHtmlCache = string(file)
 	InfoLogger.Println("loaded android html")
 	file, err = os.ReadFile(config.AppConfig.Ios.HtmlFilePath)
@@ -227,20 +227,20 @@ func loadHtmlFile() error {
 	return nil
 }
 
-func frame404WebPage() string {
-	replacements := map[string]string{
-		"{TITLE}":             config.AppConfig.SocialMedia.Title,
-		"{DESCRIPTION}":       config.AppConfig.SocialMedia.Description,
-		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
-		"{IMAGE_CONTENT}":     config.AppConfig.SocialMedia.ThumbNailImg,
-		"{REDIRECT_LOCATION}": config.AppConfig.DefaultFallbackUrl,
-		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
-	}
-	for key, val := range replacements {
-		htmlCache404 = strings.ReplaceAll(htmlCache404, key, val)
-	}
-	return htmlCache404
-}
+// func frame404WebPage() string {
+// 	replacements := map[string]string{
+// 		"{TITLE}":             config.AppConfig.SocialMedia.Title,
+// 		"{DESCRIPTION}":       config.AppConfig.SocialMedia.Description,
+// 		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
+// 		"{IMAGE_CONTENT}":     config.AppConfig.SocialMedia.ThumbNailImg,
+// 		"{REDIRECT_LOCATION}": config.AppConfig.DefaultFallbackUrl,
+// 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
+// 	}
+// 	for key, val := range replacements {
+// 		htmlCache404 = strings.ReplaceAll(htmlCache404, key, val)
+// 	}
+// 	return htmlCache404
+// }
 
 func frameAndroidWebPage(data DbShortLink, link string) string {
 	var social SocialInput
