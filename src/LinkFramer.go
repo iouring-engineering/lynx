@@ -49,7 +49,7 @@ func frameCompleteUrl(linkData DbShortLink) string {
 func frameAndroidUrl(android, shortCode string) string {
 	var parsed MobileInputs
 	json.Unmarshal([]byte(android), &parsed)
-	if parsed.Fbl == "" {
+	if parsed.Fbl == "" || android == "" {
 		if config.AppConfig.Android.Behaviour == APP_SEARCH {
 			var play = config.AppConfig.Android.GooglePlaySearchUrl
 			return fmt.Sprintf("%s&referrer=%s", play, shortCode)
@@ -65,7 +65,7 @@ func frameAndroidUrl(android, shortCode string) string {
 func frameIosUrl(ios string) string {
 	var parsed MobileInputs
 	json.Unmarshal([]byte(ios), &parsed)
-	if parsed.Fbl == "" {
+	if parsed.Fbl == "" || ios == "" {
 		if config.AppConfig.Ios.Behaviour == APP_SEARCH {
 			return config.AppConfig.Ios.AppStoreSearchUrl
 		} else if config.AppConfig.Ios.IosDefaultWebUrl != "" {
