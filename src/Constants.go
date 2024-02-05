@@ -7,6 +7,24 @@ const (
 	ALPHABETS           = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
+const SKIP_RESPONSE = "--Response skipped--"
+const SKIP_REQ_FIELD = "--Request fields skipped--"
+const TIMEOUT_ERROR = "Unable to connect to endpoint"
+const (
+	TRUE  = "true"
+	FALSE = "false"
+)
+
+// INTERNAL HEADERS
+const (
+	INTERNAL_X_SOURCE    = "X-SOURCE"
+	INTERNAL_X_REAL_IP   = "X-REAL-IP"
+	INTERNAL_X_REQ_ID    = "X-REQ-ID"
+	INTERNAL_X_BUILD     = "X-BUILD"
+	INTERNAL_X_API_INFO  = "X-API-INFO"
+	INTERNAL_X_TOKENDATA = "X-TOKENDATA"
+)
+
 const (
 	RESP_OK     = "ok"
 	RESP_ERROR  = "error"

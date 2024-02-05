@@ -85,8 +85,26 @@ func InitializeConfigs[S any](configRef *S) {
 
 func BaseMW(handler ServiceHandler) http.HandlerFunc {
 	return func(rw http.ResponseWriter, rq *http.Request) {
-		var context = &IouHttpContext{Request: rq, RespWriter: rw}
+		startTime := time.Now()
+
+		var audit = &ServiceAudit{}
+		audit.ReqT = CurrentTime()
+
+		audit.IP = rq.Header.Get(INTERNAL_X_REAL_IP)
+		audit.ReqId = rq.Header.Get(INTERNAL_X_REQ_ID)
+		audit.Method = rq.Method
+		audit.Url = rq.URL.Path
+		audit.Source = rq.Header.Get(INTERNAL_X_SOURCE)
+
+		audit.SetBuild(rq.Header.Get(INTERNAL_X_BUILD), rq.Header.Get("User-Agent"))
+		audit.SetFields(rq)
+
+		var context = &IouHttpContext{Request: rq, RespWriter: rw, Audit: audit}
+
 		handler(context)
+
+		audit.SetSC(http.StatusOK)
+		audit.LogAudit(startTime)
 	}
 }
 
@@ -302,4 +320,21 @@ func isValidJson(data string) bool {
 	raw := json.RawMessage(data)
 	json.Unmarshal(raw, &a)
 	return a != nil
+}
+
+func IsFormRequest(req *http.Request) bool {
+	return strings.EqualFold(req.Header.Get("content-type"), APPLICATION_FORM)
+}
+
+func IsJsonRequest(req *http.Request) bool {
+	return strings.EqualFold(req.Header.Get("content-type"), APPLICATION_JSON)
+}
+
+func IsOctetStream(req *http.Request) bool {
+	return strings.EqualFold(req.Header.Get("content-type"), OCTET_STREAM)
+}
+
+func GetDtInTime(inputFrmt string, date string) time.Time {
+	parseTime, _ := time.ParseInLocation(inputFrmt, date, time.Local)
+	return parseTime
 }

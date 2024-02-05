@@ -52,6 +52,7 @@ func (cxt *IouHttpContext) SendResponse(resp *Resp) {
 	if err != nil {
 		ErrorLogger.Printf("Error happened in JSON marshal. Err: %v", err)
 	}
+	cxt.Audit.setRespDataToAudit(resp)
 
 	cxt.RespWriter.Header().Set("Content-Type", "application/json")
 	cxt.RespWriter.Write(jsonResp)
