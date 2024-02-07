@@ -138,6 +138,8 @@ func GetData(cxt *IouHttpContext) {
 	}
 	linkData, exists, err := LynxDb.getData(cxt, shortCode)
 	if err != nil {
+		cxt.Audit.AppendErrListToContext(err.Error())
+		cxt.SendNoDataResponse()
 		return
 	}
 	if !exists {
