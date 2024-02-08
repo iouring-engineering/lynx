@@ -103,9 +103,9 @@ func GetSourceLink(cxt *IouHttpContext) {
 		cxt.SendErrResponse(http.StatusOK, InvalidShortUrl)
 		return
 	}
-
+	var params = GetUtmParams(*cxt.Request)
 	if isAndroidWeb(cxt) {
-		var url string = frameAndroidUrl(linkData.Android, shortCode)
+		var url string = frameAndroidUrl(linkData.Android, shortCode, params)
 		html := frameAndroidWebPage(linkData, url)
 		cxt.sendHtmlResponse(html)
 		return
@@ -113,11 +113,11 @@ func GetSourceLink(cxt *IouHttpContext) {
 
 	if isIosWeb(cxt) {
 		var url string = frameIosUrl(linkData.Ios)
-		html := frameIosWebPage(linkData, url, shortCode)
+		html := frameIosWebPage(linkData, url, shortCode, params)
 		cxt.sendHtmlResponse(html)
 		return
 	}
-	html := frameWebPage(linkData)
+	html := frameWebPage(linkData, params)
 	cxt.sendHtmlResponse(html)
 }
 

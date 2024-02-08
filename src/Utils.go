@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"reflect"
 	"strings"
@@ -228,12 +229,6 @@ func loadHtmlFile() error {
 	if err != nil {
 		return err
 	}
-	// htmlCache404 = string(file)
-	// InfoLogger.Println("loaded 404 html")
-	// file, err = os.ReadFile(config.AppConfig.Android.HtmlFilePath)
-	// if err != nil {
-	// 	return err
-	// }
 	androidHtmlCache = string(file)
 	InfoLogger.Println("loaded android html")
 	file, err = os.ReadFile(config.AppConfig.Ios.HtmlFilePath)
@@ -244,21 +239,6 @@ func loadHtmlFile() error {
 	InfoLogger.Println("loaded ios html")
 	return nil
 }
-
-// func frame404WebPage() string {
-// 	replacements := map[string]string{
-// 		"{TITLE}":             config.AppConfig.SocialMedia.Title,
-// 		"{DESCRIPTION}":       config.AppConfig.SocialMedia.Description,
-// 		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
-// 		"{IMAGE_CONTENT}":     config.AppConfig.SocialMedia.ThumbNailImg,
-// 		"{REDIRECT_LOCATION}": config.AppConfig.DefaultFallbackUrl,
-// 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
-// 	}
-// 	for key, val := range replacements {
-// 		htmlCache404 = strings.ReplaceAll(htmlCache404, key, val)
-// 	}
-// 	return htmlCache404
-// }
 
 func frameAndroidWebPage(data DbShortLink, link string) string {
 	var social SocialInput
@@ -278,10 +258,16 @@ func frameAndroidWebPage(data DbShortLink, link string) string {
 	return htmlFile
 }
 
-func frameIosWebPage(data DbShortLink, link, shortCode string) string {
+func frameIosWebPage(data DbShortLink, link, shortCode string, utm map[string]string) string {
 	var social SocialInput
 	json.Unmarshal([]byte(data.Social), &social)
 	var htmlFile = iosHtmlCache
+	utm["shortcode"] = shortCode
+	values := url.Values{}
+	for key, value := range utm {
+		values.Add(key, value)
+	}
+	var finalStringToCopy = values.Encode()
 	replacements := map[string]string{
 		"{TITLE}":             getValueOrDefault(social.Title, config.AppConfig.SocialMedia.Title),
 		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
@@ -289,7 +275,7 @@ func frameIosWebPage(data DbShortLink, link, shortCode string) string {
 		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
 		"{REDIRECT_LOCATION}": link,
 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
-		"{SHORT_CODE}":        shortCode,
+		"{SHORT_CODE}":        finalStringToCopy,
 	}
 	for key, val := range replacements {
 		htmlFile = strings.ReplaceAll(htmlFile, key, val)
@@ -297,7 +283,7 @@ func frameIosWebPage(data DbShortLink, link, shortCode string) string {
 	return htmlFile
 }
 
-func frameWebPage(data DbShortLink) string {
+func frameWebPage(data DbShortLink, utm map[string]string) string {
 	var social SocialInput
 	json.Unmarshal([]byte(data.Social), &social)
 	var htmlFile = webHtmlCache
@@ -306,7 +292,7 @@ func frameWebPage(data DbShortLink) string {
 		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
 		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
 		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
-		"{REDIRECT_LOCATION}": frameCompleteUrl(data),
+		"{REDIRECT_LOCATION}": frameCompleteUrl(data, utm),
 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
 	}
 	for key, val := range replacements {
@@ -337,4 +323,15 @@ func IsOctetStream(req *http.Request) bool {
 func GetDtInTime(inputFrmt string, date string) time.Time {
 	parseTime, _ := time.ParseInLocation(inputFrmt, date, time.Local)
 	return parseTime
+}
+
+func GetUtmParams(req http.Request) map[string]string {
+	var result map[string]string = make(map[string]string)
+	for _, param := range validUtmParams {
+		if req.URL.Query().Has(param) {
+			var value = req.URL.Query().Get(param)
+			result[param] = value
+		}
+	}
+	return result
 }

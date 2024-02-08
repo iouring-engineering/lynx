@@ -18,41 +18,46 @@ func anyToString(value any) string {
 	}
 }
 
-func frameCompleteUrl(linkData DbShortLink) string {
+func frameCompleteUrl(linkData DbShortLink, utm map[string]string) string {
 	var m map[string]any = make(map[string]any)
 	err := json.Unmarshal([]byte(linkData.Data), &m)
-	ErrorLogger.Println(err)
+	if err != nil {
+		ErrorLogger.Println(err)
+	}
 	m["shortcode"] = linkData.ShortCode
-	var urlData = ""
-	var idx = 0
+	var urlData = url.Values{}
 	for key, value := range m {
-		urlData += fmt.Sprintf("%s=%s", url.QueryEscape(key), url.QueryEscape(anyToString(value)))
-		if idx != (len(m) - 1) {
-			urlData += "&"
-		}
-		idx++
+		urlData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
+	}
+	for key, value := range utm {
+		urlData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
 	}
 	parsed, err := url.Parse(linkData.WebUrl)
 	if len(parsed.Query()) > 0 {
 		if linkData.WebUrl == "" {
-			return fmt.Sprintf("%s&%s", config.AppConfig.DefaultFallbackUrl, urlData)
+			return fmt.Sprintf("%s&%s", config.AppConfig.DefaultFallbackUrl, urlData.Encode())
 		}
-		return fmt.Sprintf("%s&%s", linkData.WebUrl, urlData)
+		return fmt.Sprintf("%s&%s", linkData.WebUrl, urlData.Encode())
 	}
 
 	if linkData.WebUrl == "" {
-		return fmt.Sprintf("%s?%s", config.AppConfig.DefaultFallbackUrl, urlData)
+		return fmt.Sprintf("%s?%s", config.AppConfig.DefaultFallbackUrl, urlData.Encode())
 	}
-	return fmt.Sprintf("%s?%s", linkData.WebUrl, urlData)
+	return fmt.Sprintf("%s?%s", linkData.WebUrl, urlData.Encode())
 }
 
-func frameAndroidUrl(android, shortCode string) string {
+func frameAndroidUrl(android, shortCode string, utm map[string]string) string {
 	var parsed MobileInputs
 	json.Unmarshal([]byte(android), &parsed)
 	if parsed.Fbl == "" || android == "" {
 		if config.AppConfig.Android.Behaviour == APP_SEARCH {
 			var play = config.AppConfig.Android.GooglePlaySearchUrl
-			return fmt.Sprintf("%s&referrer=%s", play, shortCode)
+			utm["shortcode"] = shortCode
+			values := url.Values{}
+			for key, value := range utm {
+				values.Add(key, value)
+			}
+			return fmt.Sprintf("%s&referrer=%s", play, values.Encode())
 		} else if config.AppConfig.Android.AndroidDefaultWebUrl != "" {
 			return config.AppConfig.Android.AndroidDefaultWebUrl
 		} else {

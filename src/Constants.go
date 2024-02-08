@@ -80,3 +80,14 @@ const (
 	ANDROID_NAMESPACE = "android_app"
 	ANDROID_RELATION  = "delegate_permission/common.handle_all_urls"
 )
+
+// utm params
+const (
+	UTM_SOURCE   = "utm_source"
+	UTM_MEDIUM   = "utm_medium"
+	UTM_CAMPAIGN = "utm_campaign"
+	UTM_TERM     = "utm_term"
+	UTM_CONTENT  = "utm_content"
+)
+
+var validUtmParams []string = []string{UTM_SOURCE, UTM_MEDIUM, UTM_CAMPAIGN, UTM_TERM, UTM_CONTENT}
