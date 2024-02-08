@@ -24,12 +24,16 @@ func frameCompleteUrl(linkData DbShortLink, utm map[string]string) string {
 	if err != nil {
 		ErrorLogger.Println(err)
 	}
+	var utmData = url.Values{}
+	for key, value := range utm {
+		utmData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
+	}
+	if len(utm) > 0 {
+		m["utm"] = utmData.Encode()
+	}
 	m["shortcode"] = linkData.ShortCode
 	var urlData = url.Values{}
 	for key, value := range m {
-		urlData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
-	}
-	for key, value := range utm {
 		urlData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
 	}
 	parsed, err := url.Parse(linkData.WebUrl)
