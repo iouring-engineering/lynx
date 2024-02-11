@@ -105,8 +105,9 @@ func GetSourceLink(cxt *IouHttpContext) {
 	}
 	var params = GetUtmParams(*cxt.Request)
 	if isAndroidWeb(cxt) {
-		var url string = frameAndroidUrl(linkData.Android, shortCode, params)
-		html := frameAndroidWebPage(linkData, url)
+		// var url string = frameAndroidUrl(linkData.Android, shortCode, params)
+		// html := frameAndroidWebPage(linkData, url)
+		html := frameWebPage(linkData, params)
 		cxt.sendHtmlResponse(html)
 		return
 	}
