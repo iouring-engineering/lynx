@@ -225,12 +225,12 @@ func loadHtmlFile() error {
 	}
 	webHtmlCache = string(file)
 	InfoLogger.Println("loaded web html")
-	// file, err = os.ReadFile(config.AppConfig.Android.HtmlFilePath)
-	// if err != nil {
-	// 	return err
-	// }
-	// androidHtmlCache = string(file)
-	// InfoLogger.Println("loaded android html")
+	file, err = os.ReadFile(config.AppConfig.Android.HtmlFilePath)
+	if err != nil {
+		return err
+	}
+	androidHtmlCache = string(file)
+	InfoLogger.Println("loaded android html")
 	file, err = os.ReadFile(config.AppConfig.Ios.HtmlFilePath)
 	if err != nil {
 		return err
@@ -240,23 +240,23 @@ func loadHtmlFile() error {
 	return nil
 }
 
-// func frameAndroidWebPage(data DbShortLink, link string) string {
-// 	var social SocialInput
-// 	json.Unmarshal([]byte(data.Social), &social)
-// 	var htmlFile = androidHtmlCache
-// 	replacements := map[string]string{
-// 		"{TITLE}":             getValueOrDefault(social.Title, config.AppConfig.SocialMedia.Title),
-// 		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
-// 		"{URL_CONTENT}":       link,
-// 		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
-// 		"{REDIRECT_LOCATION}": link,
-// 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
-// 	}
-// 	for key, val := range replacements {
-// 		htmlFile = strings.ReplaceAll(htmlFile, key, val)
-// 	}
-// 	return htmlFile
-// }
+func frameAndroidWebPage(data DbShortLink, link string) string {
+	var social SocialInput
+	json.Unmarshal([]byte(data.Social), &social)
+	var htmlFile = androidHtmlCache
+	replacements := map[string]string{
+		"{TITLE}":             getValueOrDefault(social.Title, config.AppConfig.SocialMedia.Title),
+		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
+		"{URL_CONTENT}":       link,
+		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
+		"{REDIRECT_LOCATION}": link,
+		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
+	}
+	for key, val := range replacements {
+		htmlFile = strings.ReplaceAll(htmlFile, key, val)
+	}
+	return htmlFile
+}
 
 func frameIosWebPage(data DbShortLink, link, shortCode string, utm map[string]string) string {
 	var social SocialInput

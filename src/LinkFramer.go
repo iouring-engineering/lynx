@@ -50,26 +50,27 @@ func frameCompleteUrl(linkData DbShortLink, utm map[string]string) string {
 	return fmt.Sprintf("%s?%s", linkData.WebUrl, urlData.Encode())
 }
 
-// func frameAndroidUrl(android, shortCode string, utm map[string]string) string {
-// 	var parsed MobileInputs
-// 	json.Unmarshal([]byte(android), &parsed)
-// 	if parsed.Fbl == "" || android == "" {
-// 		if config.AppConfig.Android.Behaviour == APP_SEARCH {
-// 			var play = config.AppConfig.Android.GooglePlaySearchUrl
-// 			utm["shortcode"] = shortCode
-// 			values := url.Values{}
-// 			for key, value := range utm {
-// 				values.Add(key, value)
-// 			}
-// 			return fmt.Sprintf("%s&referrer=%s", play, values.Encode())
-// 		} else if config.AppConfig.Android.AndroidDefaultWebUrl != "" {
-// 			return config.AppConfig.Android.AndroidDefaultWebUrl
-// 		} else {
-// 			return config.AppConfig.DefaultFallbackUrl
-// 		}
-// 	}
-// 	return parsed.Fbl
-// }
+func frameAndroidUrl(android, shortCode string, utm map[string]string) string {
+	var parsed MobileInputs
+	json.Unmarshal([]byte(android), &parsed)
+	if parsed.Fbl == "" || android == "" {
+		if config.AppConfig.Android.Behaviour == APP_SEARCH {
+			var play = config.AppConfig.Android.GooglePlaySearchUrl
+			utm["shortcode"] = shortCode
+			values := url.Values{}
+			for key, value := range utm {
+				values.Add(key, value)
+			}
+			var link = url.QueryEscape(values.Encode())
+			return fmt.Sprintf("%s&referrer=%s", play, link)
+		} else if config.AppConfig.Android.AndroidDefaultWebUrl != "" {
+			return config.AppConfig.Android.AndroidDefaultWebUrl
+		} else {
+			return config.AppConfig.DefaultFallbackUrl
+		}
+	}
+	return parsed.Fbl
+}
 
 func frameIosUrl(ios string) string {
 	var parsed MobileInputs
