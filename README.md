@@ -26,6 +26,7 @@ Here Middleware refers to REST API services which are all used for dynamic linki
 ## <span id="id-1-2" style="font-family:Helvetica ;color:lightblue">Services</span>
 
 - **/.well-known/apple-app-site-association**: this API will be using by APN's server to validate the domain and the package name, as apple server validates randomly we have to make sure that this service should be always up, below is the sample response format which we have to return in response as json.
+Refer more from [here][ios-app-verify]
 
 ```json
 {
@@ -46,6 +47,7 @@ Here Middleware refers to REST API services which are all used for dynamic linki
 
 - **/.well-known/assetlinks.json**: As we do for IOS mobile, same setup is there for android as well, but URI path is different and response format also different,
 android mostly validates when we are installing the app itself.
+Refer more from [here][android-app-verify].
 
 ```json
 [
@@ -155,3 +157,6 @@ flowchart TD
 
     Desktop --> |On Clicking| Browser[Opens a webpage </br>in browser]
 ```
+
+[android-app-verify]:https://developer.android.com/training/app-links/verify-android-applinks
+[ios-app-verify]:https://developer.apple.com/documentation/xcode/supporting-associated-domains
