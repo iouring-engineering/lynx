@@ -54,7 +54,7 @@ func getPrevDay() string {
 func isSatisfied(prevTime time.Time) bool {
 	curTime := time.Now()
 	return !(prevTime.Year() == curTime.Year() && prevTime.Month() == curTime.Month() &&
-		prevTime.Day() == curTime.Day() && prevTime.Minute() == curTime.Minute())
+		prevTime.Day() == curTime.Day())
 }
 
 func (w *Writer) rotate() time.Time {
