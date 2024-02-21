@@ -80,14 +80,12 @@ func (random *RandomID) generateNodeId() int64 {
 	var sb strings.Builder
 	interfaces, err := net.Interfaces()
 	if err != nil {
-		ErrorLogger.Panicln(err.Error())
+		Logger.Info(err.Error())
 	}
 	for _, i := range interfaces {
 		var addrs []byte = i.HardwareAddr
-		if addrs != nil {
-			for _, mac := range addrs {
-				sb.WriteString(fmt.Sprintf("%x", mac))
-			}
+		for _, mac := range addrs {
+			sb.WriteString(fmt.Sprintf("%x", mac))
 		}
 	}
 	sb.WriteString(fmt.Sprintf("%d", os.Getpid()))
@@ -105,7 +103,7 @@ func hashCode(s string) int64 {
 func (random *RandomID) GetId() (int64, error) {
 	var currentTimestamp int64 = random.getTimestamp()
 	if currentTimestamp < lastTimestamp {
-		return 0, fmt.Errorf("Invalid system clock time.")
+		return 0, fmt.Errorf("invalid system clock time")
 	}
 	if currentTimestamp == lastTimestamp {
 		sequence = (sequence + 1) & maxSequence

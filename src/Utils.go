@@ -178,10 +178,7 @@ func isDuplicateLink(err error) bool {
 
 func isAndroidWeb(cxt *IouHttpContext) bool {
 	var userAgent = cxt.Request.Header.Get("User-Agent")
-	if strings.Contains(userAgent, "Android") {
-		return true
-	}
-	return false
+	return strings.Contains(userAgent, "Android")
 }
 
 func isIosWeb(cxt *IouHttpContext) bool {
@@ -224,19 +221,19 @@ func loadHtmlFile() error {
 		return err
 	}
 	webHtmlCache = string(file)
-	InfoLogger.Println("loaded web html")
+	Logger.Info("loaded web html")
 	file, err = os.ReadFile(config.AppConfig.Android.HtmlFilePath)
 	if err != nil {
 		return err
 	}
 	androidHtmlCache = string(file)
-	InfoLogger.Println("loaded android html")
+	Logger.Info("loaded android html")
 	file, err = os.ReadFile(config.AppConfig.Ios.HtmlFilePath)
 	if err != nil {
 		return err
 	}
 	iosHtmlCache = string(file)
-	InfoLogger.Println("loaded ios html")
+	Logger.Info("loaded ios html")
 	return nil
 }
 

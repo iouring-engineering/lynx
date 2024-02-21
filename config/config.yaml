@@ -7,7 +7,7 @@ http:
 base-path: /lynx
 
 log:
-  dir:
+  dir: logs/
   file: lynx.log
   level: DEBUG
 

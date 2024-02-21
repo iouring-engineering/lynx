@@ -91,9 +91,9 @@ type LibConfig struct {
 		ReadTimeout  int `yaml:"readTimeout"`
 	}
 	Log struct {
-		Dir   string  `yaml:"dir"`
-		File  string  `yaml:"file"`
-		Level LogType `yaml:"level"`
+		Dir   string   `yaml:"dir"`
+		File  string   `yaml:"file"`
+		Level LogLevel `yaml:"level"`
 	}
 }
 

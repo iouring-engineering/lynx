@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -15,7 +16,7 @@ func (a *ServiceAudit) SetBuild(sBuild string, usrAgent string) {
 	if len(sBuild) != 0 {
 		err := json.Unmarshal([]byte(sBuild), &b)
 		if err != nil {
-			WarningLogger.Printf("Invalid JSON; build %v", err)
+			Logger.Warn(fmt.Sprintf("Invalid JSON; build %v", err))
 		}
 	}
 	a.Build = b
@@ -39,6 +40,9 @@ func (audit *ServiceAudit) setPostData(rq *http.Request) {
 	if IsFormRequest(rq) {
 		var reqFields = make(map[string]string)
 		err = rq.ParseForm()
+		if err != nil {
+			audit.AppendErrListToContext(err.Error())
+		}
 		for key := range rq.PostForm {
 			reqFields[key] = rq.PostForm.Get(key)
 		}
@@ -94,10 +98,13 @@ func (audit *ServiceAudit) LogAudit(startTime time.Time) {
 	if len(audit.ErrList) > 0 {
 		audit.SvSt = FALSE
 	}
+	if audit.Res == nil {
+		audit.Res = ""
+	}
 
 	jsonStr, _ := json.Marshal(audit)
 
-	InfoLogger.Printf("AUDIT=%s", jsonStr)
+	Logger.Info(fmt.Sprintf("AUDIT=%s", jsonStr))
 }
 
 func (audit *ServiceAudit) SetMsg(msg string) {

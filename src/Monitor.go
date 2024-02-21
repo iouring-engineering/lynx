@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // var monitorLock sync.Mutex
@@ -61,13 +62,13 @@ func MarkFailure(endCnxt EndPointContext, msg string) {
 		}
 		logMonitorData(mData)
 	} else {
-		InfoLogger.Println(endCnxt.EndpointName, msg)
+		Logger.Info(endCnxt.EndpointName, msg)
 	}
 }
 
 func logMonitorData(mData *MonitorData) {
 	jsonResp, err := json.Marshal(mData)
 	if err == nil {
-		InfoLogger.Printf("AUDIT=%v", string(jsonResp))
+		Logger.Info(fmt.Sprintf("AUDIT=%v", string(jsonResp)))
 	}
 }

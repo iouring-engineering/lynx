@@ -20,9 +20,11 @@ func anyToString(value any) string {
 
 func frameCompleteUrl(linkData DbShortLink, utm map[string]string) string {
 	var m map[string]any = make(map[string]any)
-	err := json.Unmarshal([]byte(linkData.Data), &m)
-	if err != nil {
-		ErrorLogger.Println(err)
+	if linkData.Data != "" {
+		err := json.Unmarshal([]byte(linkData.Data), &m)
+		if err != nil {
+			Logger.Error(err)
+		}
 	}
 	var utmData = url.Values{}
 	for key, value := range utm {
@@ -36,7 +38,7 @@ func frameCompleteUrl(linkData DbShortLink, utm map[string]string) string {
 	for key, value := range m {
 		urlData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
 	}
-	parsed, err := url.Parse(linkData.WebUrl)
+	parsed, _ := url.Parse(linkData.WebUrl)
 	if len(parsed.Query()) > 0 {
 		if linkData.WebUrl == "" {
 			return fmt.Sprintf("%s&%s", config.AppConfig.DefaultFallbackUrl, urlData.Encode())
