@@ -109,8 +109,40 @@ Refer more from [here][android-app-verify].
 We use MySQL as the database to store and retrieve data for the short links.
 
 ## <center id="id-2" style="font-family:Helvetica ;color:red">Android</center>
+
+1) In the `AndroidManifest.xml` file located in `android/app/src/main` directory, add an intent filter inside the `<activity>` tag:
+
 ![image](docs/android-manifest.png)
+
+**Note** : Ensure to include the `<intent-filter>` configuration within the `AndroidManifest.xml` for all flavors and whitelabel configurations if applicable.
+
+2) Update the `android:launchMode` attribute in the `AndroidManifest.xml` file to `singleTask` to ensure that when a deep link is triggered, the existing app is brought to the foreground instead of creating a new instance. you can learn more about `android:launchMode` [here](<https://medium.com/android-news/android-activity-launch-mode-e0df1aa72242>)
+
+3) Hosting `assetlinks.json` file: Host an `assetlinks.json` file in using a web server with a domain that you own. This file tells the mobile browser which Android application to open instead of the browser. To create the file, get the package name of your app and the sha256 fingerprint of the signing key you will be using to build the APK
+
+  - Locate the package name in `AndroidManifest.xml`, the package property under `<manifest> `tag. Package names are usually in the format of com.example.*.
+  - Retrieve the SHA256 fingerprint of the signing key used to build the APK. by using the following command in terminal / command line 
+
+    `keytool -list -v -keystore <path-to-keystore>`
+
 ## <center id="id-3" style="font-family:Helvetica ;color:red">IOS</center>
+1) Updaing the link in the associated domain capability of iOS application
+  - Open the iOS `Runner` app in xcode
+  - Click the top-level `Runner`.
+  - Click `Signing & Capabilities`.
+  - Click `+` Capability to add a new domain (if there isn't one already created. otherwise skip this and the next step).
+  - Click `Associated Domains`.
+  - In the `Associated Domains` section, click `+`.
+  - Enter `applinks:dev-lynx.iourin.in`.
+
+  **Note**: Ensure that the Associated Domain configuration is included within the Runner for all flavors and whitelabel configurations, if applicable.
+
+  2) Hosting `apple-app-site-association` file : You need to host an `apple-app-site-association` file in the web domain. This file tells the mobile browser which iOS application to open instead of the browser. To create the file, get the app ID of the Flutter app.
+  - App id: Locate the `bundle ID` in the Xcode project and locate the `team ID` in the [Apple developer account](https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1).
+  - for example it will be like "S8QB4VV633.com.iouring.nxtrad" where S8QB4VV633 is team ID and com.iouring.nxtrad is bundle id.
+
+**Note**: It might take up to 24 hours before Apple’s Content Delivery Network (CDN) requests the apple-app-site-association (AASA) file from your web domain. The universal link won’t work until the CDN requests the file. 
+
 
 ## <center id="id-4" style="font-family:Helvetica ;color:red">Web</center>
 
@@ -160,3 +192,29 @@ flowchart TD
 
 [android-app-verify]:https://developer.android.com/training/app-links/verify-android-applinks
 [ios-app-verify]:https://developer.apple.com/documentation/xcode/supporting-associated-domains
+
+## <center id="id-4" style="font-family:Helvetica ;color:red">Flutter implementaion</center>
+
+- To retrieve the link that opened the app, we utilize a Flutter package named [Unilinks](https://pub.dev/packages/uni_links)
+
+- There are three scenarios that need to be handled:
+
+  1) **The application is in a terminated state**
+    - In this case, we will utilize the final `uri = await getInitialUri`() method from the `uni_links` package
+  2) **The app is already open and in the background state**
+
+      ![image](docs/handle-incoming-links.png)
+  3) The app is not installed, and the link will direct the user to the respective app stores for installation
+  - iOS: For iOS applications, before navigating to the `Apple App Store`, we will redirect the user to a webpage. On this webpage, we will copy the referral/deeplink information from the link to the device's clipboard. Subsequently, after the user installs the app and opens it, we will access the clipboard information using the following method.
+
+    `final data = await Clipboard.getData('text/plain');`
+    
+    **Note** : Ensure that this method is called only once in the entire lifecycle of the app.
+  
+  - Android: For Android, we utilize the Android PlayInstallReferrer API to retrieve the referral/deeplink information.
+
+    Use the provided link to set up the [PlayInstallReferrer API](https://developer.android.com/google/play/installreferrer/library)
+
+    Utilize Flutter's `method channel` to establish communication with the PlayInstallReferrer API, enabling it to return the referral/deeplink information.
+
+    To learn more about Flutter method channels and their implementation, refer to [this article](https://medium.com/@iiharish97ii/method-channel-in-flutter-bridging-native-code-and-flutter-with-two-way-communication-788d1e91c8c1)
