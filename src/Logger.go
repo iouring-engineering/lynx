@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -25,6 +26,7 @@ type Writer struct {
 	prevRotateTime time.Time
 	filename       string
 	path           string
+	mu             *sync.Mutex
 }
 
 type LoggerObj struct {
@@ -44,50 +46,55 @@ type LogInput struct {
 	level    LogLevel
 }
 
-func getPrevDay() string {
-	currentDateTime := time.Now()
-	previousDateTime := currentDateTime.AddDate(0, 0, -1)
-	formattedPreviousDate := previousDateTime.Format("02-01-2006")
+func (w *Writer) getDate() string {
+	var previousDateTime = w.prevRotateTime
+	formattedPreviousDate := previousDateTime.Format("2006-01-02")
 	return formattedPreviousDate
 }
 
-func isSatisfied(prevTime time.Time) bool {
+func (w *Writer) isSatisfied(prevTime time.Time) bool {
 	curTime := time.Now()
 	return !(prevTime.Year() == curTime.Year() && prevTime.Month() == curTime.Month() &&
 		prevTime.Day() == curTime.Day())
 }
 
-func (w *Writer) rotate() time.Time {
+func (w *Writer) rotate() {
+	w.mu.Lock()
+	defer w.mu.Unlock()
 	w.f.Sync()
 	w.f.Close()
 
 	filePath := filepath.Join(w.path, w.filename)
-	newFileName := fmt.Sprintf("%s.%s", filePath, getPrevDay())
+	newFileName := fmt.Sprintf("%s.%s", filePath, w.getDate())
 
 	err := os.Rename(filePath, newFileName)
 	if err != nil {
-		panic(err)
+		Logger.Error(err)
+		return
 	}
 
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		panic(err)
+		Logger.Error(err)
+		return
+	}
+
+	info, err := file.Stat()
+	if err != nil {
+		Logger.Error(err)
+		return
 	}
 	w.Writer = file
 	w.f = file
-	info, err := file.Stat()
-	if err != nil {
-		panic(err)
-	}
-	return info.ModTime()
+	w.prevRotateTime = info.ModTime()
 }
 
 func (w *Writer) checkAndRotate() {
-	if isSatisfied(w.prevRotateTime) {
+	if w.isSatisfied(w.prevRotateTime) {
 		if w.f == nil {
 			return
 		}
-		w.prevRotateTime = w.rotate()
+		w.rotate()
 	}
 }
 
@@ -119,8 +126,8 @@ func (f *LoggerObj) Debug(v ...any) {
 	f.logger.Print(string(fmt.Appendln([]byte(value), v...)))
 }
 
-func updateLastModifiedTime(filepath string, prevRotateTime *time.Time) error {
-	info, err := os.Stat(filepath)
+func updateLastModifiedTime(file *os.File, prevRotateTime *time.Time) error {
+	info, err := file.Stat()
 	if err != nil {
 		return err
 	}
@@ -139,14 +146,14 @@ func InitLogging() {
 
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	var prevRotateTime = time.Now()
-	updateLastModifiedTime(filePath, &prevRotateTime)
+	updateLastModifiedTime(file, &prevRotateTime)
 
-	logObj := log.New(&Writer{f: file, Writer: file, prevRotateTime: prevRotateTime, filename: input.filename,
-		path: input.path}, "", 0)
+	logObj := log.New(&Writer{f: file, Writer: file, prevRotateTime: prevRotateTime,
+		filename: input.filename, mu: &sync.Mutex{}, path: input.path}, "", 0)
 
 	Logger = LoggerObj{
 		timeFormat: "2006-01-02 15:04:05,999",
