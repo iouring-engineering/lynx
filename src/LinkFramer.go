@@ -18,14 +18,8 @@ func anyToString(value any) string {
 	}
 }
 
-func frameCompleteUrl(linkData DbShortLink, utm map[string]string) string {
+func frameCompleteUrl(linkData DbShortLink, utm map[string]string, otherParams map[string]string) string {
 	var m map[string]any = make(map[string]any)
-	if linkData.Data != "" {
-		err := json.Unmarshal([]byte(linkData.Data), &m)
-		if err != nil {
-			Logger.Error(err)
-		}
-	}
 	var utmData = url.Values{}
 	for key, value := range utm {
 		utmData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
@@ -34,6 +28,9 @@ func frameCompleteUrl(linkData DbShortLink, utm map[string]string) string {
 		m["utm"] = utmData.Encode()
 	}
 	m["shortcode"] = linkData.ShortCode
+	for key, value := range otherParams {
+		m[key] = value
+	}
 	var urlData = url.Values{}
 	for key, value := range m {
 		urlData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
@@ -52,7 +49,7 @@ func frameCompleteUrl(linkData DbShortLink, utm map[string]string) string {
 	return fmt.Sprintf("%s?%s", linkData.WebUrl, urlData.Encode())
 }
 
-func frameAndroidUrl(android, shortCode string, utm map[string]string) string {
+func frameAndroidUrl(android, shortCode string, utm map[string]string, otherParams map[string]string) string {
 	var parsed MobileInputs
 	json.Unmarshal([]byte(android), &parsed)
 	if parsed.Fbl == "" || android == "" {
@@ -61,6 +58,9 @@ func frameAndroidUrl(android, shortCode string, utm map[string]string) string {
 			utm["shortcode"] = shortCode
 			values := url.Values{}
 			for key, value := range utm {
+				values.Add(key, value)
+			}
+			for key, value := range otherParams {
 				values.Add(key, value)
 			}
 			var link = url.QueryEscape(values.Encode())

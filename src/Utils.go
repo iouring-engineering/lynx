@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 
@@ -255,13 +256,17 @@ func frameAndroidWebPage(data DbShortLink, link string) string {
 	return htmlFile
 }
 
-func frameIosWebPage(data DbShortLink, link, shortCode string, utm map[string]string) string {
+func frameIosWebPage(data DbShortLink, link, shortCode string, utm map[string]string,
+	otherParams map[string]string) string {
 	var social SocialInput
 	json.Unmarshal([]byte(data.Social), &social)
 	var htmlFile = iosHtmlCache
 	utm["shortcode"] = shortCode
 	values := url.Values{}
 	for key, value := range utm {
+		values.Add(key, value)
+	}
+	for key, value := range otherParams {
 		values.Add(key, value)
 	}
 	var finalStringToCopy = values.Encode()
@@ -280,7 +285,7 @@ func frameIosWebPage(data DbShortLink, link, shortCode string, utm map[string]st
 	return htmlFile
 }
 
-func frameWebPage(data DbShortLink, utm map[string]string) string {
+func frameWebPage(data DbShortLink, utm map[string]string, otherParams map[string]string) string {
 	var social SocialInput
 	json.Unmarshal([]byte(data.Social), &social)
 	var htmlFile = webHtmlCache
@@ -289,7 +294,7 @@ func frameWebPage(data DbShortLink, utm map[string]string) string {
 		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
 		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
 		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
-		"{REDIRECT_LOCATION}": frameCompleteUrl(data, utm),
+		"{REDIRECT_LOCATION}": frameCompleteUrl(data, utm, otherParams),
 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
 	}
 	for key, val := range replacements {
@@ -320,6 +325,17 @@ func IsOctetStream(req *http.Request) bool {
 func GetDtInTime(inputFrmt string, date string) time.Time {
 	parseTime, _ := time.ParseInLocation(inputFrmt, date, time.Local)
 	return parseTime
+}
+
+func GetQueryParams(req http.Request) map[string]string {
+	var result map[string]string = make(map[string]string)
+	for key := range req.URL.Query() {
+		if !slices.Contains(validUtmParams, key) {
+			var value = req.URL.Query().Get(key)
+			result[key] = value
+		}
+	}
+	return result
 }
 
 func GetUtmParams(req http.Request) map[string]string {
