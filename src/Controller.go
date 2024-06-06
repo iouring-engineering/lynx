@@ -138,6 +138,7 @@ func GetData(cxt *IouHttpContext) {
 		return
 	}
 	linkData, exists, err := LynxDb.getData(cxt, shortCode)
+	var otherParams = GetQueryParams(*cxt.Request)
 	if err != nil {
 		cxt.Audit.AppendErrListToContext(err.Error())
 		cxt.SendNoDataResponse()
@@ -148,7 +149,8 @@ func GetData(cxt *IouHttpContext) {
 		return
 	}
 	if isValidJson(linkData.Data) {
-		var r = ShortCodeDataResponse{Input: json.RawMessage(linkData.Data), ShortCode: linkData.ShortCode}
+		var r = ShortCodeDataResponse{Input: json.RawMessage(linkData.Data),
+			ShortCode: linkData.ShortCode, AddParams: otherParams}
 		var res *Resp = &Resp{S: RESP_OK, D: r}
 		cxt.SendResponse(res)
 		return

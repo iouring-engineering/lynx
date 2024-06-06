@@ -183,8 +183,9 @@ type AndroidVerifyResponse struct {
 }
 
 type ShortCodeDataResponse struct {
-	Input     any    `json:"input"`
-	ShortCode string `json:"shortcode"`
+	Input     any               `json:"input"`
+	AddParams map[string]string `json:"addParams"`
+	ShortCode string            `json:"shortcode"`
 }
 
 type LogException struct {
