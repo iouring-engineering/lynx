@@ -155,7 +155,8 @@ func GetData(cxt *IouHttpContext) {
 		cxt.SendResponse(res)
 		return
 	}
-	var r = ShortCodeDataResponse{Input: linkData.Data, ShortCode: linkData.ShortCode}
+	var r = ShortCodeDataResponse{Input: linkData.Data, AddParams: otherParams,
+		ShortCode: linkData.ShortCode}
 	var res *Resp = &Resp{S: RESP_OK, D: r}
 	cxt.SendResponse(res)
 }
