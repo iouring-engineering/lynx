@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -104,25 +105,32 @@ func (w *Writer) Write(b []byte) (n int, err error) {
 }
 
 func (f *LoggerObj) Info(v ...any) {
-	var value string = fmt.Sprintf("%s %s %s - ", time.Now().Format(f.timeFormat), "INFO:", f.pid)
-	f.logger.Print(string(fmt.Appendln([]byte(value), v...)))
+	f.log(string(INFO), v...)
 }
 
 func (f *LoggerObj) Warn(v ...any) {
-	var value string = fmt.Sprintf("%s %s %s - ", time.Now().Format(f.timeFormat), "WARN:", f.pid)
-	f.logger.Print(string(fmt.Appendln([]byte(value), v...)))
+	f.log(string(WARN), v...)
 }
 
 func (f *LoggerObj) Error(v ...any) {
-	var value string = fmt.Sprintf("%s %s %s - ", time.Now().Format(f.timeFormat), "ERROR:", f.pid)
-	f.logger.Print(string(fmt.Appendln([]byte(value), v...)))
+	f.log(string(ERROR), v...)
 }
 
 func (f *LoggerObj) Debug(v ...any) {
 	if !strings.EqualFold(string(f.level), string(DEBUG)) {
 		return
 	}
-	var value string = fmt.Sprintf("%s %s %s - ", time.Now().Format(f.timeFormat), "DEBUG:", f.pid)
+	f.log(string(DEBUG), v...)
+}
+
+func (f *LoggerObj) log(logType string, v ...any) {
+	const nanoLength = 9
+	logMsgType := fmt.Sprintf("%s:", logType)
+	var t = time.Now()
+	nanoStr := strconv.Itoa(t.Nanosecond())
+	nanoStr = strings.Repeat("0", nanoLength-len(nanoStr)) + nanoStr
+	tframed := fmt.Sprintf("%s.%s", f.timeFormat, nanoStr[:6])
+	value := fmt.Sprintf("%s %s %s - ", tframed, logMsgType, f.pid)
 	f.logger.Print(string(fmt.Appendln([]byte(value), v...)))
 }
 
@@ -156,7 +164,7 @@ func InitLogging() {
 		filename: input.filename, mu: &sync.Mutex{}, path: input.path}, "", 0)
 
 	Logger = LoggerObj{
-		timeFormat: "2006-01-02 15:04:05,999",
+		timeFormat: "2006-01-02 15:04:05",
 		pid:        fmt.Sprintf("[%d]", os.Getpid()),
 		logger:     logObj,
 		level:      DEBUG,
