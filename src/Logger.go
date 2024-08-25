@@ -15,10 +15,11 @@ import (
 type LogLevel string
 
 const (
-	INFO  LogLevel = "INFO"
-	ERROR LogLevel = "ERROR"
-	WARN  LogLevel = "WARN"
-	DEBUG LogLevel = "DEBUG"
+	INFO        LogLevel = "INFO"
+	ERROR       LogLevel = "ERROR"
+	WARN        LogLevel = "WARN"
+	DEBUG       LogLevel = "DEBUG"
+	TIME_FORMAT          = "2006-01-02 15:04:05"
 )
 
 type Writer struct {
@@ -31,12 +32,11 @@ type Writer struct {
 }
 
 type LoggerObj struct {
-	level      LogLevel
-	timeFormat string
-	pid        string
-	logger     *log.Logger
-	filename   string
-	path       string
+	level    LogLevel
+	pid      string
+	logger   *log.Logger
+	filename string
+	path     string
 }
 
 var Logger LoggerObj
@@ -129,7 +129,7 @@ func (f *LoggerObj) log(logType string, v ...any) {
 	var t = time.Now()
 	nanoStr := strconv.Itoa(t.Nanosecond())
 	nanoStr = strings.Repeat("0", nanoLength-len(nanoStr)) + nanoStr
-	tframed := fmt.Sprintf("%s.%s", f.timeFormat, nanoStr[:6])
+	tframed := fmt.Sprintf("%s.%s", t.Format(TIME_FORMAT), nanoStr[:6])
 	value := fmt.Sprintf("%s %s %s - ", tframed, logMsgType, f.pid)
 	f.logger.Print(string(fmt.Appendln([]byte(value), v...)))
 }
@@ -164,12 +164,11 @@ func InitLogging() {
 		filename: input.filename, mu: &sync.Mutex{}, path: input.path}, "", 0)
 
 	Logger = LoggerObj{
-		timeFormat: "2006-01-02 15:04:05",
-		pid:        fmt.Sprintf("[%d]", os.Getpid()),
-		logger:     logObj,
-		level:      DEBUG,
-		filename:   input.filename,
-		path:       input.path,
+		pid:      fmt.Sprintf("[%d]", os.Getpid()),
+		logger:   logObj,
+		level:    DEBUG,
+		filename: input.filename,
+		path:     input.path,
 	}
 	log.SetOutput(file)
 }
