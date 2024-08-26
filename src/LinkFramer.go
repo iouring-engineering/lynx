@@ -18,8 +18,14 @@ func anyToString(value any) string {
 	}
 }
 
-func frameCompleteUrl(linkData DbShortLink, utm map[string]string, otherParams map[string]string) string {
+func frameCompleteUrl(cxt *IouHttpContext, linkData DbShortLink,
+	utm map[string]string, otherParams map[string]string) string {
 	var m map[string]any = make(map[string]any)
+	err := json.Unmarshal([]byte(linkData.Data), &m)
+	if err != nil {
+		cxt.Audit.AppendErrListToContext(err.Error())
+		return ""
+	}
 	var utmData = url.Values{}
 	for key, value := range utm {
 		utmData.Add(url.QueryEscape(key), url.QueryEscape(anyToString(value)))
