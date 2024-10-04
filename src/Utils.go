@@ -285,7 +285,7 @@ func frameIosWebPage(data DbShortLink, link, shortCode string, utm map[string]st
 	return htmlFile
 }
 
-func frameWebPage(cxt *IouHttpContext, data DbShortLink, utm map[string]string, otherParams map[string]string) string {
+func frameWebPage(data DbShortLink, utm map[string]string, otherParams map[string]string) string {
 	var social SocialInput
 	json.Unmarshal([]byte(data.Social), &social)
 	var htmlFile = webHtmlCache
@@ -294,7 +294,7 @@ func frameWebPage(cxt *IouHttpContext, data DbShortLink, utm map[string]string, 
 		"{DESCRIPTION}":       getValueOrDefault(social.Description, config.AppConfig.SocialMedia.Description),
 		"{URL_CONTENT}":       config.AppConfig.BaseUrl,
 		"{IMAGE_CONTENT}":     getValueOrDefault(social.ImgUrl, config.AppConfig.SocialMedia.ThumbNailImg),
-		"{REDIRECT_LOCATION}": frameCompleteUrl(cxt, data, utm, otherParams),
+		"{REDIRECT_LOCATION}": frameCompleteUrl(data, utm, otherParams),
 		"{ICON}":              config.AppConfig.SocialMedia.ShortIcon,
 	}
 	for key, val := range replacements {

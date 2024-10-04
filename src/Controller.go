@@ -118,7 +118,7 @@ func GetSourceLink(cxt *IouHttpContext) {
 		cxt.sendHtmlResponse(html)
 		return
 	}
-	html := frameWebPage(cxt, linkData, utmParams, otherParams)
+	html := frameWebPage(linkData, utmParams, otherParams)
 	cxt.sendHtmlResponse(html)
 }
 
