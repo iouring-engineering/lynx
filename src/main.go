@@ -11,19 +11,19 @@ import (
 // @tag.description				Creating and sharing short links
 // @host 						localhost:8080
 // @schemes 					http
-// @BasePath					/
+// @BasePath					/lynx
 // @securityDefinitions.apikey	http_bearer
 // @in 							header
 // @name 						Authorization
 func main() {
 	config = &Config{}
 	InitializeConfigs(config)
-	InfoLogger.Println("configs initialized")
+	Logger.Info("configs initialized")
 	LynxDb.InitLynxDbConn()
-	InfoLogger.Println("Lynx DB connected")
+	Logger.Info("Lynx DB connected")
 	err := loadHtmlFile()
 	if err != nil {
-		InfoLogger.Println("error on html ", err)
+		Logger.Info("error on html ", err)
 		return
 	}
 	var muxRouter *mux.Router = mux.NewRouter()

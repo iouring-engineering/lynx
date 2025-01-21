@@ -23,10 +23,10 @@ func (db *LynxDbType) InitLynxDbConn() error {
 	localDb, err := sql.Open(dbDriver, connStr)
 
 	if err != nil {
-		ErrorLogger.Panicln(err.Error())
+		Logger.Error(err.Error())
 		return err
 	}
-	InfoLogger.Println("DB configuration setup done")
+	Logger.Info("DB configuration setup done")
 	localDb.SetMaxIdleConns(config.LynxDb.MaxIdle)
 	localDb.SetMaxOpenConns(config.LynxDb.MaxOpen)
 

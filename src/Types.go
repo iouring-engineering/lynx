@@ -91,9 +91,9 @@ type LibConfig struct {
 		ReadTimeout  int `yaml:"readTimeout"`
 	}
 	Log struct {
-		Dir   string  `yaml:"dir"`
-		File  string  `yaml:"file"`
-		Level LogType `yaml:"level"`
+		Dir   string   `yaml:"dir"`
+		File  string   `yaml:"file"`
+		Level LogLevel `yaml:"level"`
 	}
 }
 
@@ -105,6 +105,7 @@ type DatabaseType struct {
 type IouHttpContext struct {
 	Request    *http.Request
 	RespWriter http.ResponseWriter
+	Audit      *ServiceAudit
 }
 
 type EndPointContext struct {
@@ -124,7 +125,7 @@ type SocialInput struct {
 	Title       string `json:"title" validate:"optional"`
 	Description string `json:"description" validate:"optional"`
 	ImgUrl      string `json:"imgUrl" validate:"optional"`
-	Icon        string `json:"short-icon"`
+	Icon        string `json:"shortIcon"`
 }
 
 type CreateShortLinkRequest struct {
@@ -179,4 +180,46 @@ type AndroidTarget struct {
 type AndroidVerifyResponse struct {
 	Relation []string      `json:"relation"`
 	Target   AndroidTarget `json:"target"`
+}
+
+type ShortCodeDataResponse struct {
+	Input     any               `json:"input"`
+	AddParams map[string]string `json:"addParams"`
+	ShortCode string            `json:"shortcode"`
+}
+
+type LogException struct {
+	Type   string `json:"ty,omitempty"`
+	Msg    string `json:"msg,omitempty"`
+	Status string `json:"st,omitempty"`
+}
+
+type Build struct {
+	Id        string `json:"id"`
+	Details   string `json:"d"`
+	Model     string `json:"m"`
+	OsVer     string `json:"osv"`
+	AppVer    string `json:"appv"`
+	Type      string `json:"t"`
+	UserAgent string `json:"usrAg"`
+}
+
+type ServiceAudit struct {
+	Url          string       `json:"url"`
+	Method       string       `json:"method"`
+	Msg          string       `json:"msg,omitempty"`
+	IP           string       `json:"ip,omitempty"`
+	TT           int64        `json:"tt"`
+	ReqT         string       `json:"reqT,omitempty"`
+	ResT         string       `json:"resT,omitempty"`
+	SvSt         string       `json:"svSt,omitempty"`
+	Err          LogException `json:"ex,omitempty"`
+	ErrList      []string     `json:"exLst,omitempty"`
+	Source       string       `json:"source,omitempty"`
+	Build        Build        `json:"build,omitempty"`
+	Sc           string       `json:"sc,omitempty"`
+	ReqId        string       `json:"reqId,omitempty"`
+	Res          any          `json:"res,omitempty"`
+	Fields       any          `json:"fields,omitempty"`
+	SkipResponse bool         `json:"-"`
 }

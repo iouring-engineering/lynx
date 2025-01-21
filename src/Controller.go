@@ -23,7 +23,8 @@ func CreateShortLink(cxt *IouHttpContext) {
 	var request CreateShortLinkRequest
 	err := ReqBodyDecode(cxt, &request)
 	if err != nil {
-
+		cxt.SendBadReqResponse(err.Error())
+		return
 	}
 	if err = validateCreateLink(request); err != nil {
 		cxt.SendBadReqResponse(err.Error())
@@ -46,28 +47,26 @@ func CreateShortLink(cxt *IouHttpContext) {
 
 	for {
 		shortCode = genShortUrl()
-		var dbExp = sql.NullString{String: request.Expiry, Valid: true}
-		err = LynxDb.insertShortLink(cxt, DbShortLink{
-			ShortCode: shortCode,
-			Data:      strData,
-			WebUrl:    request.WebUrl,
-			Android:   string(androidStr),
-			Ios:       string(iosStr),
-			Social:    string(socialStr),
-			Expiry:    dbExp,
-		})
+		var dbExp = sql.NullString{Valid: false}
+		if request.Expiry != "" {
+			dbExp = sql.NullString{String: request.Expiry, Valid: true}
+		}
+		err = LynxDb.insertShortLink(cxt, DbShortLink{Data: strData, WebUrl: request.WebUrl,
+			Android: string(androidStr), Ios: string(iosStr), Social: string(socialStr),
+			Expiry: dbExp, ShortCode: shortCode})
 		retryCount++
 		if err != nil && isDuplicateLink(err) {
 			if retryCount <= config.AppConfig.DuplicateRetryCount {
 				continue
 			} else {
-				var res = &Resp{
-					S:   RESP_ERROR,
-					Msg: ShortLinkFailed,
-				}
+				var res = &Resp{S: RESP_ERROR, Msg: ShortLinkFailed}
 				cxt.SendResponse(res)
 				return
 			}
+		}
+		if err != nil {
+			cxt.SendErrResponse(http.StatusOK, EndpointErr)
+			return
 		}
 		break
 	}
@@ -75,7 +74,8 @@ func CreateShortLink(cxt *IouHttpContext) {
 	var res = &Resp{
 		S: RESP_OK,
 		D: map[string]string{
-			"link": fmt.Sprintf("%s/%s", config.AppConfig.BaseUrl, shortCode),
+			"link":      fmt.Sprintf("%s/%s", config.AppConfig.BaseUrl, shortCode),
+			"shortcode": shortCode,
 		},
 	}
 	cxt.SendResponse(res)
@@ -98,18 +98,15 @@ func GetSourceLink(cxt *IouHttpContext) {
 		cxt.SendErrResponse(http.StatusOK, InvalidShortUrl)
 		return
 	}
-	linkData, exists, err := LynxDb.getData(cxt, shortCode)
+	linkData, _, err := LynxDb.getData(cxt, shortCode)
 	if err != nil {
+		cxt.SendErrResponse(http.StatusOK, InvalidShortUrl)
 		return
 	}
-	if !exists {
-		html := frame404WebPage()
-		cxt.sendHtmlResponse(html)
-		return
-	}
-
+	var utmParams = GetUtmParams(*cxt.Request)
+	var otherParams = GetQueryParams(*cxt.Request)
 	if isAndroidWeb(cxt) {
-		var url string = frameAndroidUrl(linkData.Android, shortCode)
+		var url string = frameAndroidUrl(linkData.Android, shortCode, utmParams, otherParams)
 		html := frameAndroidWebPage(linkData, url)
 		cxt.sendHtmlResponse(html)
 		return
@@ -117,11 +114,11 @@ func GetSourceLink(cxt *IouHttpContext) {
 
 	if isIosWeb(cxt) {
 		var url string = frameIosUrl(linkData.Ios)
-		html := frameIosWebPage(linkData, url, shortCode)
+		html := frameIosWebPage(linkData, url, shortCode, utmParams, otherParams)
 		cxt.sendHtmlResponse(html)
 		return
 	}
-	html := frameWebPage(linkData)
+	html := frameWebPage(linkData, utmParams, otherParams)
 	cxt.sendHtmlResponse(html)
 }
 
@@ -129,7 +126,7 @@ func GetSourceLink(cxt *IouHttpContext) {
 // @Description	Get data using short code
 // @Tags        Links
 // @Id 			get-source-link-data
-// @Success		200 {object} string
+// @Success		200 {object} ShortCodeDataResponse
 // @Produce     json
 // @Param       shortcode   path  string true "shortcode" example(CJloO)
 // @Router      /data/{shortcode} [get]
@@ -141,7 +138,10 @@ func GetData(cxt *IouHttpContext) {
 		return
 	}
 	linkData, exists, err := LynxDb.getData(cxt, shortCode)
+	var otherParams = GetQueryParams(*cxt.Request)
 	if err != nil {
+		cxt.Audit.AppendErrListToContext(err.Error())
+		cxt.SendNoDataResponse()
 		return
 	}
 	if !exists {
@@ -149,10 +149,14 @@ func GetData(cxt *IouHttpContext) {
 		return
 	}
 	if isValidJson(linkData.Data) {
-		var res *Resp = &Resp{S: RESP_OK, D: json.RawMessage(linkData.Data)}
+		var r = ShortCodeDataResponse{Input: json.RawMessage(linkData.Data),
+			ShortCode: linkData.ShortCode, AddParams: otherParams}
+		var res *Resp = &Resp{S: RESP_OK, D: r}
 		cxt.SendResponse(res)
 		return
 	}
-	var res *Resp = &Resp{S: RESP_OK, D: linkData.Data}
+	var r = ShortCodeDataResponse{Input: linkData.Data, AddParams: otherParams,
+		ShortCode: linkData.ShortCode}
+	var res *Resp = &Resp{S: RESP_OK, D: r}
 	cxt.SendResponse(res)
 }

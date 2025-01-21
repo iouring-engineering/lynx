@@ -7,5 +7,5 @@ var (
 	webHtmlCache     string
 	androidHtmlCache string
 	iosHtmlCache     string
-	htmlCache404     string
+	// htmlCache404     string
 )

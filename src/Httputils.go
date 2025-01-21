@@ -50,8 +50,9 @@ func (cxt *IouHttpContext) SendResponse(resp *Resp) {
 	jsonResp, err := JSONMarshal(resp)
 
 	if err != nil {
-		ErrorLogger.Printf("Error happened in JSON marshal. Err: %v", err)
+		Logger.Error(fmt.Printf("Error happened in JSON marshal. Err: %v", err))
 	}
+	cxt.Audit.setRespDataToAudit(resp)
 
 	cxt.RespWriter.Header().Set("Content-Type", "application/json")
 	cxt.RespWriter.Write(jsonResp)
@@ -61,7 +62,7 @@ func (cxt *IouHttpContext) SendAnyResponse(resp any) {
 	jsonResp, err := JSONMarshal(resp)
 
 	if err != nil {
-		ErrorLogger.Printf("Error happened in JSON marshal. Err: %v", err)
+		Logger.Error(fmt.Printf("Error happened in JSON marshal. Err: %v", err))
 	}
 
 	cxt.RespWriter.Header().Set("Content-Type", "application/json")
@@ -77,7 +78,7 @@ func (cxt *IouHttpContext) SendErrResponse(httpStatusCode int, message string) {
 	jsonResp, err := json.Marshal(resp)
 
 	if err != nil {
-		ErrorLogger.Printf("Error happened in JSON marshal. Err: %v", err)
+		Logger.Error(fmt.Sprintf("Error happened in JSON marshal. Err: %v", err))
 	}
 
 	cxt.RespWriter.Header().Set("Content-Type", APPLICATION_JSON)
@@ -111,6 +112,7 @@ func (cxt *IouHttpContext) SendResponseMsg(status string, msg string) {
 }
 
 func (cxt *IouHttpContext) sendHtmlResponse(respBytes string) {
+	cxt.Audit.Res = respBytes
 	cxt.RespWriter.Header().Set("Content-Type", "text/html")
 	cxt.RespWriter.Write([]byte(respBytes))
 }

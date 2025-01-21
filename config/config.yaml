@@ -4,10 +4,10 @@ http:
   writeTimeout: 15
   readTimeout: 15
 
-base-path: /
+base-path: /lynx
 
 log:
-  dir:
+  dir: logs/
   file: lynx.log
   level: DEBUG
 
